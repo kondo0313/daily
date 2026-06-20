@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --bg: #0f0f13;
+    --surface: #1a1a22;
+    --surface2: #22222e;
+    --border: #2e2e3e;
+    --accent: #7c6af7;
+    --accent2: #4fc3f7;
+    --accent3: #81c784;
+    --warn: #ffb74d;
+    --text: #e8e8f0;
+    --muted: #7070a0;
+    --red: #ef5350;
+    --radius: 10px;
+    --font: 'Zen Kaku Gothic New', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.6; }
+  h2 { font-size: 13px; font-weight: 700; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; }
+  h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  input, textarea, select { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--font); font-size: 13px; padding: 6px 10px; outline: none; width: 100%; }
+  input:focus, textarea:focus { border-color: var(--accent); }
+  textarea { resize: vertical; }
+  button { cursor: pointer; border: none; border-radius: 6px; font-family: var(--font); font-size: 13px; font-weight: 700; padding: 7px 14px; transition: opacity .15s; }
+  button:hover { opacity: .85; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-ghost { background: var(--surface2); color: var(--text); }
+  .btn-sm { padding: 4px 10px; font-size: 12px; }
+  .chip { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1.5px solid var(--border); color: var(--muted); }
+  .chip.active { border-color: var(--accent); color: var(--accent); background: rgba(124,106,247,.12); }
+
+  /* Layout */
+  .layout { display: grid; grid-template-columns: 260px 1fr 320px; gap: 14px; padding: 14px; min-height: 100vh; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+
+  /* Header */
+  .header { grid-column: 1/-1; display: flex; align-items: center; gap: 16px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+  .header .date { font-family: var(--mono); font-size: 18px; font-weight: 700; color: var(--accent2); }
+  .header .clock { font-family: var(--mono); font-size: 22px; font-weight: 700; }
+  .header .spacer { flex: 1; }
+  .sync-status { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+  .sync-status.syncing { color: var(--warn); }
+  .sync-status.ok { color: var(--accent3); }
+  .sync-status.err { color: var(--red); }
+
+  /* Left: Streaks + Goals */
+  .left { display: flex; flex-direction: column; gap: 14px; }
+
+  /* Streaks */
+  .streak-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .streak-card { background: var(--surface2); border-radius: 8px; padding: 10px; text-align: center; }
+  .streak-card .label { font-size: 11px; color: var(--muted); }
+  .streak-card .count { font-family: var(--mono); font-size: 26px; font-weight: 700; color: var(--accent); }
+  .streak-card .unit { font-size: 11px; color: var(--muted); }
+
+  /* Goal panels */
+  .goal-card { background: var(--surface2); border-radius: 8px; padding: 12px; margin-bottom: 8px; }
+  .goal-card:last-child { margin-bottom: 0; }
+  .goal-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .goal-icon { font-size: 18px; }
+  .goal-tabs { display: flex; gap: 4px; margin-bottom: 8px; }
+  .goal-tab { font-size: 11px; padding: 2px 8px; border-radius: 20px; cursor: pointer; border: 1.5px solid var(--border); color: var(--muted); }
+  .goal-tab.active { border-color: var(--accent2); color: var(--accent2); background: rgba(79,195,247,.1); }
+  .goal-content { font-size: 12px; color: var(--text); min-height: 36px; }
+  .goal-edit { display: none; }
+  .goal-edit.open { display: block; }
+  .goal-edit textarea { font-size: 12px; margin-top: 4px; min-height: 54px; }
+
+  /* Middle: Schedule + Tasks */
+  .middle { display: flex; flex-direction: column; gap: 14px; }
+
+  /* AI Review */
+  .review-panel { background: linear-gradient(135deg, rgba(124,106,247,.08), rgba(79,195,247,.05)); border: 1px solid rgba(124,106,247,.3); border-radius: var(--radius); padding: 14px; }
+  .review-content { font-size: 13px; color: var(--text); white-space: pre-wrap; line-height: 1.7; max-height: 120px; overflow-y: auto; }
+
+  /* Schedule */
+  .schedule { overflow-x: auto; }
+  .time-slot { display: flex; align-items: stretch; gap: 8px; margin-bottom: 4px; min-height: 38px; }
+  .time-label { font-family: var(--mono); font-size: 12px; color: var(--muted); width: 44px; flex-shrink: 0; padding-top: 10px; }
+  .time-block { flex: 1; background: var(--surface2); border-radius: 6px; padding: 6px 10px; font-size: 13px; display: flex; align-items: center; gap: 8px; position: relative; }
+  .time-block.current { border-left: 3px solid var(--accent); }
+  .time-block .study-chips { display: flex; gap: 4px; }
+
+  /* Tasks */
+  .tasks-area {}
+  .task-item { background: var(--surface2); border-radius: 8px; padding: 12px; margin-bottom: 8px; }
+  .task-item:last-child { margin-bottom: 0; }
+  .task-header { display: flex; align-items: center; gap: 8px; margin-bottom: 0; }
+  .task-check { width: 18px; height: 18px; border-radius: 4px; border: 2px solid var(--border); cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .task-check.done { background: var(--accent3); border-color: var(--accent3); }
+  .task-check.done::after { content: '✓'; color: #fff; font-size: 12px; }
+  .task-name-wrap { flex: 1; }
+  .task-name { font-size: 14px; font-weight: 700; }
+  .task-name.done { text-decoration: line-through; color: var(--muted); }
+  .task-actions { display: flex; gap: 4px; }
+  .task-body { margin-top: 8px; display: none; }
+  .task-body.open { display: block; }
+  .task-body textarea { min-height: 60px; font-size: 12px; }
+  .qr-popup { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 100; align-items: center; justify-content: center; }
+  .qr-popup.open { display: flex; }
+  .qr-box { background: #fff; border-radius: 12px; padding: 24px; text-align: center; }
+  .qr-box p { font-family: var(--font); color: #333; margin-top: 10px; font-size: 13px; }
+  .add-task-row { display: flex; gap: 8px; margin-top: 8px; }
+
+  /* Right: Chat */
+  .right { display: flex; flex-direction: column; }
+  .chat-panel { display: flex; flex-direction: column; height: calc(100vh - 28px - 52px - 14px); }
+  .chat-config { display: flex; gap: 6px; margin-bottom: 8px; align-items: center; flex-wrap: wrap; }
+  .chat-config input { flex: 1; min-width: 0; font-family: var(--mono); font-size: 11px; }
+  .chat-messages { flex: 1; overflow-y: auto; background: var(--surface2); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
+  .chat-msg { max-width: 88%; }
+  .chat-msg.user { align-self: flex-end; }
+  .chat-msg.assistant { align-self: flex-start; }
+  .chat-msg .bubble { padding: 8px 12px; border-radius: 10px; font-size: 13px; line-height: 1.65; white-space: pre-wrap; }
+  .chat-msg.user .bubble { background: var(--accent); color: #fff; border-bottom-right-radius: 3px; }
+  .chat-msg.assistant .bubble { background: var(--surface); border: 1px solid var(--border); border-bottom-left-radius: 3px; }
+  .chat-msg.thinking .bubble { background: var(--surface); border: 1px dashed var(--border); color: var(--muted); font-size: 12px; }
+  .chat-input-row { display: flex; gap: 6px; }
+  .chat-input-row textarea { flex: 1; min-height: 60px; max-height: 120px; resize: vertical; }
+  .chat-input-row button { align-self: flex-end; height: 38px; }
+  .context-row { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
+  .context-chip { font-size: 11px; padding: 2px 8px; border-radius: 20px; cursor: pointer; border: 1.5px solid var(--border); color: var(--muted); }
+  .context-chip.active { border-color: var(--accent3); color: var(--accent3); background: rgba(129,199,132,.1); }
+
+  /* Scrollbars */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="date" id="headerDate"></div>
+  </div>
+  <div class="clock" id="headerClock">--:--:--</div>
+  <div class="spacer"></div>
+  <button class="btn-ghost btn-sm" onclick="pullGist()">↓ Pull</button>
+  <button class="btn-ghost btn-sm" onclick="pushGist()">↑ Push</button>
+  <span class="sync-status" id="syncStatus">●  未同期</span>
+</div>
+
+<!-- LEFT COLUMN -->
+<div class="left">
+
+  <!-- Streaks -->
+  <div class="panel">
+    <h2>Streak</h2>
+    <div class="streak-grid">
+      <div class="streak-card">
+        <div class="label">Study</div>
+        <div class="count" id="st-study">0</div>
+        <div class="unit">days</div>
+      </div>
+      <div class="streak-card">
+        <div class="label">Vega</div>
+        <div class="count" id="st-vega">0</div>
+        <div class="unit">days</div>
+      </div>
+      <div class="streak-card">
+        <div class="label">Video</div>
+        <div class="count" id="st-video">0</div>
+        <div class="unit">days</div>
+      </div>
+      <div class="streak-card">
+        <div class="label">Pot</div>
+        <div class="count" id="st-pot">0</div>
+        <div class="unit">days</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
+      <button class="btn-ghost btn-sm" onclick="addStreak('study')">+Study</button>
+      <button class="btn-ghost btn-sm" onclick="addStreak('vega')">+Vega</button>
+      <button class="btn-ghost btn-sm" onclick="addStreak('video')">+Video</button>
+      <button class="btn-ghost btn-sm" onclick="addStreak('pot')">+Pot</button>
+    </div>
+  </div>
+
+  <!-- Goals -->
+  <div class="panel" style="flex:1;overflow-y:auto;">
+    <h2>Goals</h2>
+
+    <!-- Vega -->
+    <div class="goal-card" id="goal-vega">
+      <div class="goal-header">
+        <span class="goal-icon">🎮</span>
+        <h3>ベガ 1000戦</h3>
+        <button class="btn-ghost btn-sm" style="margin-left:auto" onclick="toggleGoalEdit('vega')">編集</button>
+      </div>
+      <div class="goal-tabs">
+        <div class="goal-tab active" onclick="switchGoalTab('vega','long',this)">長期</div>
+        <div class="goal-tab" onclick="switchGoalTab('vega','mid',this)">中期</div>
+        <div class="goal-tab" onclick="switchGoalTab('vega','short',this)">短期</div>
+      </div>
+      <div class="goal-content" id="goal-vega-text">-</div>
+      <div class="goal-edit" id="goal-vega-edit">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">長期</div>
+        <textarea id="gv-long" rows="2" oninput="saveGoalText('vega')"></textarea>
+        <div style="font-size:11px;color:var(--muted);margin:6px 0 4px;">中期</div>
+        <textarea id="gv-mid" rows="2" oninput="saveGoalText('vega')"></textarea>
+        <div style="font-size:11px;color:var(--muted);margin:6px 0 4px;">短期</div>
+        <textarea id="gv-short" rows="2" oninput="saveGoalText('vega')"></textarea>
+      </div>
+    </div>
+
+    <!-- Video -->
+    <div class="goal-card" id="goal-video">
+      <div class="goal-header">
+        <span class="goal-icon">🎬</span>
+        <h3>動画一本</h3>
+        <button class="btn-ghost btn-sm" style="margin-left:auto" onclick="toggleGoalEdit('video')">編集</button>
+      </div>
+      <div class="goal-tabs">
+        <div class="goal-tab active" onclick="switchGoalTab('video','long',this)">長期</div>
+        <div class="goal-tab" onclick="switchGoalTab('video','mid',this)">中期</div>
+        <div class="goal-tab" onclick="switchGoalTab('video','short',this)">短期</div>
+      </div>
+      <div class="goal-content" id="goal-video-text">-</div>
+      <div class="goal-edit" id="goal-video-edit">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">長期</div>
+        <textarea id="gvid-long" rows="2" oninput="saveGoalText('video')"></textarea>
+        <div style="font-size:11px;color:var(--muted);margin:6px 0 4px;">中期</div>
+        <textarea id="gvid-mid" rows="2" oninput="saveGoalText('video')"></textarea>
+        <div style="font-size:11px;color:var(--muted);margin:6px 0 4px;">短期</div>
+        <textarea id="gvid-short" rows="2" oninput="saveGoalText('video')"></textarea>
+      </div>
+    </div>
+
+    <!-- Pot -->
+    <div class="goal-card" id="goal-pot">
+      <div class="goal-header">
+        <span class="goal-icon">🪴</span>
+        <h3>ポット販売</h3>
+        <button class="btn-ghost btn-sm" style="margin-left:auto" onclick="toggleGoalEdit('pot')">編集</button>
+      </div>
+      <div class="goal-tabs">
+        <div class="goal-tab active" onclick="switchGoalTab('pot','long',this)">長期</div>
+        <div class="goal-tab" onclick="switchGoalTab('pot','mid',this)">中期</div>
+        <div class="goal-tab" onclick="switchGoalTab('pot','short',this)">短期</div>
+      </div>
+      <div class="goal-content" id="goal-pot-text">-</div>
+      <div class="goal-edit" id="goal-pot-edit">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">長期</div>
+        <textarea id="gp-long" rows="2" oninput="saveGoalText('pot')"></textarea>
+        <div style="font-size:11px;color:var(--muted);margin:6px 0 4px;">中期</div>
+        <textarea id="gp-mid" rows="2" oninput="saveGoalText('pot')"></textarea>
+        <div style="font-size:11px;color:var(--muted);margin:6px 0 4px;">短期</div>
+        <textarea id="gp-short" rows="2" oninput="saveGoalText('pot')"></textarea>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MIDDLE COLUMN -->
+<div class="middle">
+
+  <!-- AI Review -->
+  <div class="review-panel panel">
+    <h2>🤖 AI Morning Review</h2>
+    <div class="review-content" id="aiReview">まだレビューがありません。夜のルーティンが実行されると表示されます。</div>
+  </div>
+
+  <!-- Schedule -->
+  <div class="panel">
+    <h2>Schedule</h2>
+    <div id="scheduleArea"></div>
+  </div>
+
+  <!-- Tasks -->
+  <div class="panel" style="flex:1;">
+    <h2>Today's Tasks</h2>
+    <div id="tasksArea"></div>
+    <div class="add-task-row">
+      <input type="text" id="newTaskInput" placeholder="タスクを追加..." onkeydown="if(event.key==='Enter')addExtraTask()">
+      <button class="btn-primary btn-sm" onclick="addExtraTask()">+ 追加</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- RIGHT COLUMN: Chat -->
+<div class="right">
+  <div class="panel chat-panel">
+    <h2>Claude Chat</h2>
+    <div class="chat-config">
+      <input type="password" id="apiKeyInput" placeholder="ANTHROPIC_API_KEY" onchange="saveApiKey()">
+      <button class="btn-ghost btn-sm" onclick="clearChat()">クリア</button>
+    </div>
+
+    <!-- Context chips -->
+    <div class="context-row">
+      <span class="context-chip" id="ctx-goals" onclick="toggleCtx('goals')">目標</span>
+      <span class="context-chip" id="ctx-tasks" onclick="toggleCtx('tasks')">タスク</span>
+      <span class="context-chip" id="ctx-review" onclick="toggleCtx('review')">レビュー</span>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-msg assistant"><div class="bubble">こんにちは！今日も一緒に作業しましょう 💪<br>困ったことや話したいことがあれば何でも声をかけてください。</div></div>
+    </div>
+    <div class="chat-input-row">
+      <textarea id="chatInput" placeholder="メッセージを入力... (Shift+Enter で送信)" onkeydown="if(event.key==='Enter'&&event.shiftKey){event.preventDefault();sendChat();}"></textarea>
+      <button class="btn-primary" onclick="sendChat()">送信</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- QR Popup -->
+<div class="qr-popup" id="qrPopup" onclick="closeQr(event)">
+  <div class="qr-box">
+    <div id="qrCode"></div>
+    <p id="qrLabel"></p>
+    <button class="btn-ghost btn-sm" style="margin-top:10px;color:#333" onclick="document.getElementById('qrPopup').classList.remove('open')">閉じる</button>
+  </div>
+</div>
+
+<script>
+// ===================== STATE =====================
+const TODAY = (() => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+})();
+
+const DEFAULT_STATE = {
+  streaks: { study: 0, vega: 0, video: 0, pot: 0 },
+  goals: {
+    vega:  { long: '', mid: '', short: '' },
+    video: { long: '', mid: '', short: '' },
+    pot:   { long: '', mid: '', short: '' },
+  },
+  dailyLog: {},  // { "2025-06-01": { tasks: [...], reflections: {}, studyType: '' } }
+  aiReview: '',
+  chatHistory: [],
+  gistId: '',
+  gistToken: '',
+};
+
+let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+let goalTabState = { vega: 'long', video: 'long', pot: 'long' };
+let pushTimer = null;
+let contextFlags = { goals: false, tasks: false, review: false };
+
+function getToday() {
+  if (!state.dailyLog[TODAY]) {
+    state.dailyLog[TODAY] = {
+      tasks: [
+        { id: 'vega',  name: 'ベガ練習', fixed: true,  done: false, memo: '' },
+        { id: 'video', name: '動画作業', fixed: true,  done: false, memo: '' },
+        { id: 'pot',   name: 'ポット作業', fixed: true, done: false, memo: '' },
+      ],
+      reflections: {},
+      studyType: '',
+    };
+  }
+  return state.dailyLog[TODAY];
+}
+
+// ===================== PERSIST =====================
+function loadLocal() {
+  try {
+    const s = localStorage.getItem('daily-state');
+    if (s) state = Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), JSON.parse(s));
+  } catch(e) {}
+  const k = localStorage.getItem('anthropic-api-key');
+  if (k) document.getElementById('apiKeyInput').value = k;
+  const gid = localStorage.getItem('gist-id');
+  const gtk = localStorage.getItem('gist-token');
+  if (gid) state.gistId = gid;
+  if (gtk) state.gistToken = gtk;
+}
+
+function saveLocal() {
+  localStorage.setItem('daily-state', JSON.stringify(state));
+}
+
+function saveApiKey() {
+  const v = document.getElementById('apiKeyInput').value.trim();
+  if (v) localStorage.setItem('anthropic-api-key', v);
+}
+
+// ===================== GIST =====================
+async function pullGist() {
+  const gistId = state.gistId || prompt('Gist ID:');
+  const token  = state.gistToken || prompt('Gist Token:');
+  if (!gistId || !token) return;
+  state.gistId = gistId; state.gistToken = token;
+  localStorage.setItem('gist-id', gistId);
+  localStorage.setItem('gist-token', token);
+  setSyncStatus('syncing', '↓ 取得中...');
+  try {
+    const r = await fetch(`https://api.github.com/gists/${gistId}`, {
+      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github+json' }
+    });
+    if (!r.ok) throw new Error(r.status);
+    const data = await r.json();
+    const file = data.files['system-state.json'];
+    if (file) {
+      const remote = JSON.parse(file.content);
+      state = Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), remote);
+      state.gistId = gistId; state.gistToken = token;
+      saveLocal();
+      renderAll();
+    }
+    setSyncStatus('ok', '✓ 同期済み');
+  } catch(e) {
+    setSyncStatus('err', '✗ エラー: ' + e.message);
+  }
+}
+
+async function pushGist() {
+  const gistId = state.gistId;
+  const token  = state.gistToken;
+  if (!gistId || !token) { alert('Gist IDとTokenを設定してください (Pullボタンから)'); return; }
+  setSyncStatus('syncing', '↑ 保存中...');
+  try {
+    const body = JSON.stringify({ files: { 'system-state.json': { content: JSON.stringify(state, null, 2) } } });
+    const r = await fetch(`https://api.github.com/gists/${gistId}`, {
+      method: 'PATCH',
+      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
+      body
+    });
+    if (!r.ok) throw new Error(r.status);
+    setSyncStatus('ok', '✓ 保存済み ' + new Date().toLocaleTimeString('ja'));
+  } catch(e) {
+    setSyncStatus('err', '✗ エラー: ' + e.message);
+  }
+}
+
+function schedulePush() {
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => { saveLocal(); if (state.gistId) pushGist(); else saveLocal(); }, 1200);
+}
+
+function setSyncStatus(cls, text) {
+  const el = document.getElementById('syncStatus');
+  el.className = 'sync-status ' + cls;
+  el.textContent = text;
+}
+
+// ===================== CLOCK =====================
+function tickClock() {
+  const now = new Date();
+  document.getElementById('headerClock').textContent =
+    now.toLocaleTimeString('ja-JP', { hour12: false });
+  const days = ['日','月','火','水','木','金','土'];
+  document.getElementById('headerDate').textContent =
+    `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} (${days[now.getDay()]})`;
+  highlightCurrentSlot(now.getHours());
+}
+
+// ===================== STREAKS =====================
+function renderStreaks() {
+  ['study','vega','video','pot'].forEach(k => {
+    document.getElementById('st-'+k).textContent = state.streaks[k] || 0;
+  });
+}
+
+function addStreak(k) {
+  state.streaks[k] = (state.streaks[k] || 0) + 1;
+  renderStreaks();
+  schedulePush();
+}
+
+// ===================== GOALS =====================
+function renderGoals() {
+  ['vega','video','pot'].forEach(g => {
+    const tab = goalTabState[g] || 'long';
+    const txt = (state.goals[g] && state.goals[g][tab]) || '-';
+    document.getElementById('goal-'+g+'-text').textContent = txt;
+    const ids = { vega: ['gv-long','gv-mid','gv-short'], video: ['gvid-long','gvid-mid','gvid-short'], pot: ['gp-long','gp-mid','gp-short'] };
+    const tabs = ['long','mid','short'];
+    ids[g].forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (el) el.value = (state.goals[g] && state.goals[g][tabs[i]]) || '';
+    });
+  });
+}
+
+function toggleGoalEdit(g) {
+  const el = document.getElementById('goal-'+g+'-edit');
+  el.classList.toggle('open');
+}
+
+function switchGoalTab(g, tab, el) {
+  goalTabState[g] = tab;
+  el.closest('.goal-card').querySelectorAll('.goal-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderGoals();
+}
+
+function saveGoalText(g) {
+  if (!state.goals[g]) state.goals[g] = {};
+  const ids = { vega: ['gv-long','gv-mid','gv-short'], video: ['gvid-long','gvid-mid','gvid-short'], pot: ['gp-long','gp-mid','gp-short'] };
+  const tabs = ['long','mid','short'];
+  ids[g].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) state.goals[g][tabs[i]] = el.value;
+  });
+  renderGoals();
+  schedulePush();
+}
+
+// ===================== SCHEDULE =====================
+const SCHEDULE = [
+  { time: '07:00', label: '学習', type: 'study' },
+  { time: '08:00', label: 'ベガ練習', type: 'vega' },
+  { time: '09:00', label: 'ベガ練習', type: 'vega' },
+  { time: '10:00', label: '動画作業', type: 'video' },
+  { time: '11:00', label: '動画作業', type: 'video' },
+  { time: '12:00', label: '昼休み', type: 'break' },
+  { time: '13:00', label: 'ポット作業', type: 'pot' },
+  { time: '14:00', label: 'ポット作業', type: 'pot' },
+  { time: '15:00', label: '自由/予備', type: 'free' },
+  { time: '16:00', label: '振り返り', type: 'reflect' },
+];
+
+const STUDY_TYPES = [
+  { key: 'ai',    label: 'AI研究' },
+  { key: 'en',    label: '英語' },
+  { key: 'vega2', label: 'ベガ勉強' },
+];
+
+const TYPE_COLOR = { study: '#7c6af7', vega: '#4fc3f7', video: '#ffb74d', pot: '#81c784', break: '#7070a0', free: '#7070a0', reflect: '#ef9a9a' };
+
+function renderSchedule() {
+  const today = getToday();
+  const area = document.getElementById('scheduleArea');
+  area.innerHTML = '';
+  SCHEDULE.forEach(slot => {
+    const div = document.createElement('div');
+    div.className = 'time-slot';
+    div.id = 'slot-' + slot.time.replace(':','');
+    div.innerHTML = `<div class="time-label">${slot.time}</div>
+    <div class="time-block" style="border-left:3px solid ${TYPE_COLOR[slot.type]||'#555'}">
+      <span style="font-size:13px">${slot.label}</span>
+      ${slot.type === 'study' ? renderStudyChips(today.studyType) : ''}
+    </div>`;
+    area.appendChild(div);
+  });
+}
+
+function renderStudyChips(current) {
+  return `<div class="study-chips" style="margin-left:auto">` +
+    STUDY_TYPES.map(t => `<span class="chip ${current===t.key?'active':''}" onclick="setStudyType('${t.key}')">${t.label}</span>`).join('') +
+  `</div>`;
+}
+
+function setStudyType(key) {
+  const today = getToday();
+  today.studyType = key;
+  renderSchedule();
+  schedulePush();
+}
+
+function highlightCurrentSlot(hour) {
+  document.querySelectorAll('.time-slot').forEach(el => el.querySelector('.time-block')?.classList.remove('current'));
+  const slot = SCHEDULE.find(s => parseInt(s.time) === hour);
+  if (slot) {
+    const el = document.getElementById('slot-' + slot.time.replace(':',''));
+    if (el) el.querySelector('.time-block')?.classList.add('current');
+  }
+}
+
+// ===================== TASKS =====================
+function renderTasks() {
+  const today = getToday();
+  const area = document.getElementById('tasksArea');
+  area.innerHTML = '';
+  today.tasks.forEach((task, idx) => {
+    const div = document.createElement('div');
+    div.className = 'task-item';
+    div.innerHTML = `
+      <div class="task-header">
+        <div class="task-check ${task.done?'done':''}" onclick="toggleTask(${idx})"></div>
+        <div class="task-name-wrap">
+          ${task.fixed
+            ? `<div class="task-name ${task.done?'done':''}" id="tname-${idx}">${task.name}</div>`
+            : `<input type="text" value="${escHtml(task.name)}" style="font-weight:700;font-size:14px" onchange="renameTask(${idx},this.value)">`
+          }
+        </div>
+        <div class="task-actions">
+          <button class="btn-ghost btn-sm" onclick="toggleMemo(${idx})">📝</button>
+          <button class="btn-ghost btn-sm" onclick="showQr(${idx})">QR</button>
+          ${!task.fixed ? `<button class="btn-ghost btn-sm" style="color:var(--red)" onclick="deleteTask(${idx})">✕</button>` : ''}
+        </div>
+      </div>
+      <div class="task-body" id="tbody-${idx}">
+        <textarea placeholder="メモ・目標・振り返り..." oninput="saveMemo(${idx},this.value)">${escHtml(task.memo||'')}</textarea>
+      </div>
+    `;
+    area.appendChild(div);
+  });
+}
+
+function toggleTask(idx) {
+  const today = getToday();
+  today.tasks[idx].done = !today.tasks[idx].done;
+  renderTasks();
+  schedulePush();
+}
+
+function toggleMemo(idx) {
+  const el = document.getElementById('tbody-' + idx);
+  el.classList.toggle('open');
+}
+
+function saveMemo(idx, val) {
+  const today = getToday();
+  today.tasks[idx].memo = val;
+  schedulePush();
+}
+
+function renameTask(idx, val) {
+  const today = getToday();
+  today.tasks[idx].name = val;
+  schedulePush();
+}
+
+function deleteTask(idx) {
+  const today = getToday();
+  today.tasks.splice(idx, 1);
+  renderTasks();
+  schedulePush();
+}
+
+function addExtraTask() {
+  const input = document.getElementById('newTaskInput');
+  const name = input.value.trim();
+  if (!name) return;
+  const today = getToday();
+  today.tasks.push({ id: 'extra-' + Date.now(), name, fixed: false, done: false, memo: '' });
+  input.value = '';
+  renderTasks();
+  schedulePush();
+}
+
+// ===================== QR =====================
+let qrObj = null;
+
+function showQr(idx) {
+  const today = getToday();
+  const task = today.tasks[idx];
+  const popup = document.getElementById('qrPopup');
+  const box = document.getElementById('qrCode');
+  const label = document.getElementById('qrLabel');
+  box.innerHTML = '';
+  label.textContent = task.name + ' のタイマーをセット';
+  qrObj = new QRCode(box, {
+    text: `alarmy://timer?name=${encodeURIComponent(task.name)}&duration=3600`,
+    width: 200, height: 200
+  });
+  popup.classList.add('open');
+}
+
+function closeQr(e) {
+  if (e.target.id === 'qrPopup') document.getElementById('qrPopup').classList.remove('open');
+}
+
+// ===================== AI REVIEW =====================
+function renderReview() {
+  const el = document.getElementById('aiReview');
+  el.textContent = state.aiReview || 'まだレビューがありません。夜のルーティンが実行されると表示されます。';
+}
+
+// ===================== CHAT =====================
+let chatHistory = [];
+
+function toggleCtx(key) {
+  contextFlags[key] = !contextFlags[key];
+  document.getElementById('ctx-'+key).classList.toggle('active', contextFlags[key]);
+}
+
+function buildSystemPrompt() {
+  const today = getToday();
+  let sys = `あなたは近藤さんの日々の作業パートナーです。フレンドリーで励ましてくれる存在として、毎日一緒に作業をサポートしてください。
+今日: ${TODAY}`;
+
+  if (contextFlags.goals) {
+    sys += '\n\n【目標】\n';
+    ['vega','video','pot'].forEach(g => {
+      const gl = state.goals[g];
+      if (gl) sys += `${g}: 長期=${gl.long||'-'} / 中期=${gl.mid||'-'} / 短期=${gl.short||'-'}\n`;
+    });
+  }
+  if (contextFlags.tasks) {
+    sys += '\n\n【今日のタスク】\n';
+    today.tasks.forEach(t => {
+      sys += `- ${t.name} [${t.done?'完了':'未完了'}]${t.memo ? ' メモ: '+t.memo : ''}\n`;
+    });
+  }
+  if (contextFlags.review) {
+    sys += '\n\n【今朝のAIレビュー】\n' + (state.aiReview || 'なし');
+  }
+  return sys;
+}
+
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  const apiKey = document.getElementById('apiKeyInput').value.trim();
+  if (!apiKey) {
+    appendMsg('assistant', 'APIキーが設定されていません。右上の入力欄にANTHROPIC_API_KEYを入力してください。');
+    return;
+  }
+
+  input.value = '';
+  appendMsg('user', text);
+  chatHistory.push({ role: 'user', content: text });
+
+  const thinkId = 'thinking-' + Date.now();
+  appendMsg('thinking', '考え中...', thinkId);
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
+        system: buildSystemPrompt(),
+        messages: chatHistory,
+      })
+    });
+    const data = await res.json();
+    document.getElementById(thinkId)?.remove();
+
+    if (data.error) {
+      appendMsg('assistant', '⚠️ エラー: ' + data.error.message);
+      chatHistory.pop();
+      return;
+    }
+
+    const reply = data.content[0].text;
+    chatHistory.push({ role: 'assistant', content: reply });
+    appendMsg('assistant', reply);
+
+    // Save last 30 messages to state
+    state.chatHistory = chatHistory.slice(-30);
+    schedulePush();
+  } catch(e) {
+    document.getElementById(thinkId)?.remove();
+    appendMsg('assistant', '⚠️ 通信エラー: ' + e.message);
+    chatHistory.pop();
+  }
+}
+
+function appendMsg(role, text, id) {
+  const area = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + role;
+  if (id) div.id = id;
+  div.innerHTML = `<div class="bubble">${escHtml(text)}</div>`;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function clearChat() {
+  chatHistory = [];
+  state.chatHistory = [];
+  const area = document.getElementById('chatMessages');
+  area.innerHTML = '<div class="chat-msg assistant"><div class="bubble">チャット履歴をクリアしました。また話しかけてください！</div></div>';
+  schedulePush();
+}
+
+// ===================== UTILS =====================
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ===================== RENDER ALL =====================
+function renderAll() {
+  renderStreaks();
+  renderGoals();
+  renderSchedule();
+  renderTasks();
+  renderReview();
+  if (state.chatHistory?.length) {
+    chatHistory = state.chatHistory;
+    const area = document.getElementById('chatMessages');
+    area.innerHTML = '';
+    chatHistory.forEach(m => appendMsg(m.role, m.content));
+  }
+}
+
+// ===================== INIT =====================
+loadLocal();
+renderAll();
+setInterval(tickClock, 1000);
+tickClock();
+</script>
+</body>
+</html>
