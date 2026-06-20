@@ -1,0 +1,18 @@
+name: Discord Daily Notification
+
+on:
+  schedule:
+    - cron: '0 21 * * *'  # 毎日 6:00 AM JST (= 21:00 UTC)
+  workflow_dispatch:       # 手動実行も可能
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Discord notification
+        run: |
+          curl -X POST "${{ secrets.DISCORD_WEBHOOK }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "content": "☀️ おはようございます！今日も SYSTEMを開いて始めましょう 🔥\nhttps://kondo0313.github.io/daily/system.html"
+            }'
