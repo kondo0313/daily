@@ -62,6 +62,24 @@
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
   @media (prefers-reduced-motion:reduce){.task.now::before{animation:none}}
 
+  /* Task edit panel */
+  .task-edit{background:var(--panel-2);border:1px solid var(--gold);border-top:none;border-radius:0 0 13px 13px;padding:13px 14px}
+  .edit-row{display:flex;gap:8px;margin-bottom:8px}
+  .edit-time{width:72px;flex:none;background:var(--bg);border:1px solid var(--line);border-radius:7px;color:var(--ink);font-family:var(--mono);font-size:13px;padding:7px 10px;outline:none}
+  .edit-nm{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:7px;color:var(--ink);font-family:var(--ui);font-size:13px;padding:7px 10px;outline:none}
+  .edit-time:focus,.edit-nm:focus{border-color:var(--gold)}
+  .edit-sub{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:7px;color:var(--ink);font-family:var(--ui);font-size:12px;padding:6px 10px;outline:none;margin-bottom:9px}
+  .edit-sub:focus{border-color:var(--gold)}
+  .core-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;color:var(--muted);cursor:pointer}
+  .edit-btns{display:flex;gap:7px}
+  .ebtn-save{font-family:var(--mono);font-size:11px;font-weight:700;padding:6px 14px;border-radius:7px;border:none;background:var(--gold);color:var(--bg);cursor:pointer}
+  .ebtn-cancel{font-family:var(--mono);font-size:11px;font-weight:700;padding:6px 10px;border-radius:7px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
+  .ebtn-del{font-family:var(--mono);font-size:11px;font-weight:700;padding:6px 10px;border-radius:7px;border:1px solid var(--hot);background:transparent;color:var(--hot);cursor:pointer;margin-left:auto}
+  .editbtn{flex:none;background:transparent;border:none;color:var(--faint);font-size:14px;padding:4px 5px;cursor:pointer;line-height:1}
+  .editbtn:active{color:var(--gold)}
+  .add-task-btn{width:100%;margin-top:4px;padding:12px;border-radius:11px;border:1px dashed var(--line);background:transparent;color:var(--faint);font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px}
+  .add-task-btn:active{border-color:var(--gold);color:var(--gold)}
+
   /* Comment section */
   .cmts{display:none;background:var(--panel-2);border:1px solid var(--line);border-top:none;border-radius:0 0 13px 13px;padding:10px 12px}
   .cmts.open{display:block}
@@ -79,7 +97,6 @@
   .cmt-btn-cancel{font-family:var(--mono);font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
   .cmt-actions{display:flex;gap:3px;flex:none}
   .cmt-act-btn{background:none;border:none;color:var(--faint);font-size:12px;cursor:pointer;padding:2px 4px;border-radius:4px}
-  .cmt-act-btn:hover{color:var(--muted)}
   .cmt-add{display:flex;gap:7px;margin-top:9px}
   .cmt-add textarea{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-family:var(--ui);font-size:13px;padding:7px 10px;resize:none;min-height:36px;outline:none}
   .cmt-add textarea:focus{border-color:var(--gold)}
@@ -187,6 +204,7 @@
 
   <div class="eyebrow">今日のミッション</div>
   <div id="tasks"></div>
+  <button class="add-task-btn" onclick="addSchedTask()">＋ タスクを追加</button>
 
   <div class="eyebrow">追加タスク</div>
   <div id="extraTasks"></div>
@@ -215,6 +233,19 @@
 <script>
 const LS = 'system.v2';
 
+const SCHEDULE_DEF = [
+  {id:'wake',  t:'5:45',  nm:'起床',       sub:'QRで解除',       core:false},
+  {id:'wake2', t:'6:00',  nm:'起床 予備',  sub:'保険',           core:false},
+  {id:'run',   t:'6:10',  nm:'ランニング', sub:'ルーティン',     core:false},
+  {id:'meal',  t:'6:40',  nm:'弁当＆朝食', sub:'ルーティン',    core:false},
+  {id:'study', t:'7:00',  nm:'勉強',       sub:'Claudeと着手',  core:true},
+  {id:'prep',  t:'7:45',  nm:'身支度',     sub:'ルーティン',     core:false},
+  {id:'vega',  t:'18:45', nm:'ベガ 1戦',   sub:'起動するだけ',  core:true},
+  {id:'video', t:'20:00', nm:'動画 5分',   sub:'開いて1カット', core:true},
+  {id:'pot',   t:'21:00', nm:'ポット',     sub:'IG1投稿 / 短期1個', core:true},
+  {id:'sleep', t:'22:00', nm:'就寝準備',   sub:'画面オフ',       core:false},
+];
+
 // Gist設定 (初回のみpromptで入力、以降localStorageに記憶)
 function getGistCreds() {
   let gid = localStorage.getItem('gist-id');
@@ -230,7 +261,7 @@ let _pushTimer = null;
 
 async function pullGist() {
   if (!hasCreds()) return;
-  const { gid, gtk } = { gid: localStorage.getItem('gist-id'), gtk: localStorage.getItem('gist-token') };
+  const gid = localStorage.getItem('gist-id'), gtk = localStorage.getItem('gist-token');
   setSyncStatus('syncing');
   try {
     const r = await fetch(`https://api.github.com/gists/${gid}`, { headers: { Authorization: `Bearer ${gtk}` } });
@@ -239,10 +270,9 @@ async function pullGist() {
     const f = j.files && j.files[GIST_FILE];
     if (!f) { setSyncStatus('ok'); return; }
     const data = JSON.parse(f.content);
-    // merge remote into local
-    if (data.short)       s.short       = { ...s.short, ...data.short };
-    if (data.studySuggest){ const dk=key(); if(!s.studyPick[dk]) s.studyPick[dk]=data.studySuggest; }
-    if (data.aiReview)    s.aiReview    = data.aiReview;
+    if (data.short)    s.short    = { ...s.short, ...data.short };
+    if (data.aiReview) s.aiReview = data.aiReview;
+    if (data.schedule) s.schedule = data.schedule;
     if (data.progress) {
       if (data.progress.vega  != null) s.vega  = data.progress.vega;
       if (data.progress.video != null) s.video = data.progress.video;
@@ -259,7 +289,7 @@ async function pullGist() {
 
 function pushGist() {
   if (!hasCreds()) return;
-  const { gid, gtk } = { gid: localStorage.getItem('gist-id'), gtk: localStorage.getItem('gist-token') };
+  const gid = localStorage.getItem('gist-id'), gtk = localStorage.getItem('gist-token');
   clearTimeout(_pushTimer);
   _pushTimer = setTimeout(async () => {
     setSyncStatus('syncing');
@@ -268,6 +298,7 @@ function pushGist() {
         progress: { vega: s.vega, video: s.video, pot: s.pot, log: s.log },
         short:    s.short,
         aiReview: s.aiReview,
+        schedule: s.schedule,
         extras:   s.extras,
         comments: s.comments,
         updated:  Date.now(),
@@ -287,23 +318,11 @@ function setSyncStatus(state) {
   el.className = 'pill sync' + (state === 'ok' ? ' ok' : state === 'err' ? ' err' : '');
   el.textContent = state === 'syncing' ? '⇅ …' : state === 'ok' ? '✓ sync' : '✗ sync';
 }
-function manualSync() { const c=getGistCreds(); if(c.gid&&c.gtk) pullGist(); }
+function manualSync() { const c = getGistCreds(); if (c.gid && c.gtk) pullGist(); }
 
 // ===== STATE =====
 const WD = ['日','月','火','水','木','金','土'];
-const SCHEDULE = [
-  {id:'wake',  t:'5:45',  nm:'起床',       sub:'QRで解除'},
-  {id:'wake2', t:'6:00',  nm:'起床 予備',  sub:'保険'},
-  {id:'run',   t:'6:10',  nm:'ランニング', sub:'ルーティン'},
-  {id:'meal',  t:'6:40',  nm:'弁当＆朝食', sub:'ルーティン'},
-  {id:'study', t:'7:00',  nm:'勉強',       sub:'Claudeと着手'},
-  {id:'prep',  t:'7:45',  nm:'身支度',     sub:'ルーティン'},
-  {id:'vega',  t:'18:45', nm:'ベガ 1戦',   sub:'起動するだけ'},
-  {id:'video', t:'20:00', nm:'動画 5分',   sub:'開いて1カット'},
-  {id:'pot',   t:'21:00', nm:'ポット',     sub:'IG1投稿 / 短期1個'},
-  {id:'sleep', t:'22:00', nm:'就寝準備',   sub:'画面オフ'},
-];
-const CORE = ['study','vega','video','pot'];
+let editingId = null;
 
 let s = load();
 function load() {
@@ -317,8 +336,9 @@ function load() {
     short:     r.short     || { vega:'', video:'', pot:'' },
     studyPick: r.studyPick || {},
     aiReview:  r.aiReview  || '',
-    extras:    r.extras    || [],    // [{id,nm,done}]
-    comments:  r.comments  || {},   // { taskId: [{text,time}] }
+    schedule:  r.schedule  || SCHEDULE_DEF.map(t => ({...t})),
+    extras:    r.extras    || [],
+    comments:  r.comments  || {},
   };
 }
 function save(sync = true) {
@@ -331,7 +351,8 @@ function key(d) {
 }
 function doneSet(k) { return new Set(s.log[k] || []); }
 function mins(t) { const [h,m] = t.split(':').map(Number); return h*60+m; }
-function dayComplete(k) { const d = doneSet(k); return CORE.every(id => d.has(id)); }
+function coreIds() { return s.schedule.filter(x => x.core).map(x => x.id); }
+function dayComplete(k) { const d = doneSet(k); return coreIds().every(id => d.has(id)); }
 function streak() {
   let d = new Date(); d.setHours(12,0,0,0);
   if (!dayComplete(key(d))) d.setDate(d.getDate()-1);
@@ -346,7 +367,7 @@ function toggle(id) {
   set.has(id) ? set.delete(id) : set.add(id);
   s.log[k] = [...set]; save(); render();
 }
-function vega(d) {
+function vegaInc(d) {
   s.vega = Math.max(0, (s.vega||0) + d);
   if (d > 0) { const set = doneSet(key()); set.add('vega'); s.log[key()] = [...set]; }
   save(); render();
@@ -357,6 +378,50 @@ function setStudy(p) { const k = key(); s.studyPick[k] = (s.studyPick[k]===p ? '
 function editShort(g) {
   const v = prompt('今日の具体的な一手:', s.short[g]||'');
   if (v !== null) { s.short[g] = v.trim(); save(); render(); }
+}
+
+// ===== SCHEDULE TASK MANAGEMENT =====
+function addSchedTask() {
+  const id = 'task-' + Date.now();
+  s.schedule.push({ id, t: '12:00', nm: '新しいタスク', sub: '', core: false });
+  s.schedule.sort((a, b) => mins(a.t) - mins(b.t));
+  editingId = id;
+  save(); render();
+  // scroll to the new task
+  setTimeout(() => {
+    const el = document.getElementById('edit-' + id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 50);
+}
+
+function startEdit(id, e) {
+  e.stopPropagation();
+  editingId = (editingId === id) ? null : id;
+  render();
+}
+
+function saveEdit(id) {
+  const t = s.schedule.find(x => x.id === id);
+  if (!t) return;
+  const tVal = document.getElementById('edit-t-' + id).value.trim();
+  const nmVal = document.getElementById('edit-nm-' + id).value.trim();
+  if (!nmVal) return;
+  t.t = tVal || t.t;
+  t.nm = nmVal;
+  t.sub = document.getElementById('edit-sub-' + id).value.trim();
+  t.core = document.getElementById('edit-core-' + id).checked;
+  s.schedule.sort((a, b) => mins(a.t) - mins(b.t));
+  editingId = null;
+  save(); render();
+}
+
+function deleteSchedTask(id, e) {
+  e.stopPropagation();
+  s.schedule = s.schedule.filter(x => x.id !== id);
+  // also remove comments for this task
+  delete s.comments[id];
+  editingId = null;
+  save(); render();
 }
 
 // ===== QR =====
@@ -404,6 +469,7 @@ function saveEditComment(id, ci) {
   renderCommentSection(id);
 }
 function toggleCmts(id) {
+  if (editingId === id) return;
   const el = document.getElementById('cmts-' + id);
   if (el) el.classList.toggle('open');
 }
@@ -454,12 +520,13 @@ function toggleExtra(id) {
   t.done = !t.done; save(); renderExtras();
 }
 function deleteExtra(id) {
-  s.extras = s.extras.filter(x => x.id !== id); save(); renderExtras();
+  s.extras = s.extras.filter(x => x.id !== id);
+  delete s.comments[id];
+  save(); renderExtras();
 }
 function renderExtras() {
   const area = document.getElementById('extraTasks'); area.innerHTML = '';
   s.extras.forEach(t => {
-    // task row
     const wrap = document.createElement('div');
     const row = document.createElement('div');
     row.className = 'extra-task' + (t.done ? ' done' : '');
@@ -468,7 +535,6 @@ function renderExtras() {
       <div class="enm">${esc(t.nm)}</div>
       <button class="cmtbtn${getComments(t.id).length>0?' has':''}" data-cmtbtn="${t.id}" onclick="toggleCmts('${t.id}')">💬${getComments(t.id).length>0?' '+getComments(t.id).length:''}</button>
       <button class="extra-del" onclick="deleteExtra('${t.id}')">✕</button>`;
-    // comment section
     const cmts = document.createElement('div');
     cmts.className = 'cmts';
     cmts.id = 'cmts-' + t.id;
@@ -497,7 +563,7 @@ function render() {
   document.getElementById('date').textContent = `${k.slice(5).replace('-','/')} (${WD[now.getDay()]})`;
   document.getElementById('clock').textContent = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   document.getElementById('streak').textContent = streak();
-  document.getElementById('ratio').textContent = `${SCHEDULE.filter(t => done.has(t.id)).length}/${SCHEDULE.length}`;
+  document.getElementById('ratio').textContent = `${s.schedule.filter(t => done.has(t.id)).length}/${s.schedule.length}`;
 
   // AI Review
   const rb = document.getElementById('reviewBody');
@@ -511,47 +577,72 @@ function render() {
 
   // Find active task
   let activeId = null;
-  const upcoming = SCHEDULE.filter(t => !done.has(t.id));
-  for (const t of SCHEDULE) { if (mins(t.t) <= nowMin && !done.has(t.id)) activeId = t.id; }
+  const upcoming = s.schedule.filter(t => !done.has(t.id));
+  for (const t of s.schedule) { if (mins(t.t) <= nowMin && !done.has(t.id)) activeId = t.id; }
   if (!activeId && upcoming.length) activeId = upcoming[0].id;
 
   const tw = document.getElementById('tasks'); tw.innerHTML = '';
-  SCHEDULE.forEach(t => {
-    const on = done.has(t.id), act = t.id === activeId && !on;
+  s.schedule.forEach(t => {
+    const on = done.has(t.id), act = t.id === activeId && !on, editing = editingId === t.id;
     const wrap = document.createElement('div');
     wrap.className = 'task-wrap';
 
     // task row
     const el = document.createElement('div');
-    el.className = 'task' + (on ? ' done' : '') + (act ? ' now' : '');
-    let subtxt = t.sub;
-    if (t.id === 'study') { const pk = s.studyPick[k]||''; subtxt = pk ? ({ai:'仕事AI',en:'英語',vega:'ベガ'})[pk] : '↓ 今日のを選ぶ'; }
+    el.className = 'task' + (on ? ' done' : '') + (act ? ' now' : '') + (editing ? ' now' : '');
+    el.style.borderRadius = editing ? '13px 13px 0 0' : '';
+    let subtxt = t.sub || '';
+    if (t.id === 'study') { const pk = s.studyPick[k]||''; subtxt = pk ? ({ai:'仕事AI',en:'英語',vega:'ベガ'})[pk] : (t.sub || '↓ 今日のを選ぶ'); }
     const cmtCount = getComments(t.id).length;
     el.innerHTML = `
       <div class="t">${t.t}</div>
-      <div class="nm">${t.nm}<small>${subtxt}</small></div>
+      <div class="nm">${esc(t.nm)}<small>${esc(subtxt)}</small></div>
       <button class="cmtbtn${cmtCount>0?' has':''}" data-cmtbtn="${t.id}" onclick="event.stopPropagation();toggleCmts('${t.id}')">💬${cmtCount>0?' '+cmtCount:''}</button>
-      <button class="qrbtn" onclick="event.stopPropagation();openQR('${t.id}','${t.nm}')">QR</button>
+      <button class="qrbtn" onclick="event.stopPropagation();openQR('${t.id}','${esc(t.nm)}')">QR</button>
+      <button class="editbtn" onclick="startEdit('${t.id}',event)" title="編集">✏️</button>
       <div class="box"><svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 5"/></svg></div>`;
-    el.onclick = () => toggle(t.id);
-
-    // comment section
-    const cmts = document.createElement('div');
-    cmts.className = 'cmts';
-    cmts.id = 'cmts-' + t.id;
-    cmts.innerHTML = `<div class="cmt-list"></div>
-      <div class="cmt-add">
-        <textarea id="newcmt-${t.id}" placeholder="コメントを追加..." rows="1"></textarea>
-        <button onclick="addComment('${t.id}', document.getElementById('newcmt-${t.id}').value); document.getElementById('newcmt-${t.id}').value=''">追加</button>
-      </div>`;
+    el.onclick = () => { if (editingId === t.id) return; toggle(t.id); };
 
     wrap.appendChild(el);
-    wrap.appendChild(cmts);
-    tw.appendChild(wrap);
-    renderCommentSection(t.id);
 
-    // study chips
-    if (t.id === 'study') {
+    // edit panel
+    if (editing) {
+      const ep = document.createElement('div');
+      ep.className = 'task-edit';
+      ep.id = 'edit-' + t.id;
+      ep.innerHTML = `
+        <div class="edit-row">
+          <input class="edit-time" id="edit-t-${t.id}" value="${esc(t.t)}" placeholder="7:00">
+          <input class="edit-nm" id="edit-nm-${t.id}" value="${esc(t.nm)}" placeholder="タスク名">
+        </div>
+        <input class="edit-sub" id="edit-sub-${t.id}" value="${esc(t.sub||'')}" placeholder="サブテキスト（任意）">
+        <label class="core-row">
+          <input type="checkbox" id="edit-core-${t.id}" ${t.core?'checked':''}> ストリーク対象（連続記録に含める）
+        </label>
+        <div class="edit-btns">
+          <button class="ebtn-save" onclick="saveEdit('${t.id}')">保存</button>
+          <button class="ebtn-cancel" onclick="editingId=null;render()">キャンセル</button>
+          <button class="ebtn-del" onclick="deleteSchedTask('${t.id}',event)">削除</button>
+        </div>`;
+      wrap.appendChild(ep);
+    } else {
+      // comment section (only shown when not editing)
+      const cmts = document.createElement('div');
+      cmts.className = 'cmts';
+      cmts.id = 'cmts-' + t.id;
+      cmts.innerHTML = `<div class="cmt-list"></div>
+        <div class="cmt-add">
+          <textarea id="newcmt-${t.id}" placeholder="コメントを追加..." rows="1"></textarea>
+          <button onclick="addComment('${t.id}', document.getElementById('newcmt-${t.id}').value); document.getElementById('newcmt-${t.id}').value=''">追加</button>
+        </div>`;
+      wrap.appendChild(cmts);
+      renderCommentSection(t.id);
+    }
+
+    tw.appendChild(wrap);
+
+    // study chips (only when not editing)
+    if (t.id === 'study' && !editing) {
       const pk = s.studyPick[k]||'';
       const chips = document.createElement('div');
       chips.className = 'chips';
@@ -607,7 +698,7 @@ function render() {
     gw.appendChild(card);
   });
 
-  gw.querySelectorAll('[data-v]').forEach(b => b.onclick = e => { e.stopPropagation(); vega(parseInt(b.dataset.v)); });
+  gw.querySelectorAll('[data-v]').forEach(b => b.onclick = e => { e.stopPropagation(); vegaInc(parseInt(b.dataset.v)); });
   gw.querySelectorAll('.node[data-fn="stage"]').forEach(n => n.onclick = () => setStage(parseInt(n.dataset.i)));
   gw.querySelectorAll('.node[data-fn="pot"]').forEach(n => n.onclick = () => togglePot(parseInt(n.dataset.i)));
   gw.querySelectorAll('[data-short]').forEach(x => x.onclick = () => editShort(x.dataset.short));
@@ -616,18 +707,17 @@ function render() {
 // ===== COPY =====
 document.getElementById('copy').onclick = async () => {
   const now = new Date(), k = key(now), done = doneSet(k);
-  const dn = SCHEDULE.filter(t => done.has(t.id)).map(t => t.nm);
-  const un = SCHEDULE.filter(t => !done.has(t.id)).map(t => t.nm);
+  const dn = s.schedule.filter(t => done.has(t.id)).map(t => t.nm);
+  const un = s.schedule.filter(t => !done.has(t.id)).map(t => t.nm);
   const VID = ['素材整理','ラフカット','本編集','書き出し'];
   let txt = `【SYSTEM ${k.slice(5).replace('-','/')}(${WD[now.getDay()]})】\n`;
-  txt += `今日 ${dn.length}/${SCHEDULE.length} ・ 連続 ${streak()}日\n`;
+  txt += `今日 ${dn.length}/${s.schedule.length} ・ 連続 ${streak()}日\n`;
   if (dn.length) txt += `✅ ${dn.join(' / ')}\n`;
   if (un.length) txt += `⬜ ${un.join(' / ')}\n`;
   txt += `― 中長期 ―\nベガ ${s.vega||0}/1000 (${Math.round((s.vega||0)/10)}%) ・ 動画 M${s.video+1}${VID[s.video]} ・ ポット ${s.pot.filter(Boolean).length}/4\n`;
   txt += `― 今日の短期 ―\nベガ: ${s.short.vega||'(未設定)'}\n動画: ${s.short.video||'(未設定)'}\nポット: ${s.short.pot||'(未設定)'}\n`;
-  // add comments
   const allCmts = [];
-  SCHEDULE.forEach(t => { const c = getComments(t.id); if(c.length) allCmts.push(`【${t.nm}】\n`+c.map(x=>`  ${x.time} ${x.text}`).join('\n')); });
+  s.schedule.forEach(t => { const c = getComments(t.id); if(c.length) allCmts.push(`【${t.nm}】\n`+c.map(x=>`  ${x.time} ${x.text}`).join('\n')); });
   s.extras.forEach(t => { const c = getComments(t.id); if(c.length) allCmts.push(`【${t.nm}】\n`+c.map(x=>`  ${x.time} ${x.text}`).join('\n')); });
   if (allCmts.length) txt += `― コメント ―\n` + allCmts.join('\n');
   try { await navigator.clipboard.writeText(txt); } catch(e) {
