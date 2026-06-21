@@ -231,25 +231,18 @@
   </div>
 
 <script>
-const LS = 'system.v6';
+const LS = 'system.v7';
 
 const SCHEDULE_DEF = [
-  {id:'wake',    t:'5:45',  nm:'起床',            sub:'QRで解除',             core:false},
-  {id:'wake2',   t:'6:00',  nm:'起床 予備',        sub:'保険',                 core:false},
-  {id:'run',     t:'6:10',  nm:'ランニング',        sub:'ルーティン',            core:false},
-  {id:'meal',    t:'6:40',  nm:'弁当＆朝食',       sub:'ルーティン',            core:false},
-  {id:'study',   t:'7:00',  nm:'アラームの修正',    sub:'今日のみ',              core:true},
-  {id:'prep',    t:'7:45',  nm:'身支度',           sub:'ルーティン',            core:false},
-  {id:'nap',     t:'12:00', nm:'💤 昼寝',          sub:'やってしまった',         core:false},
-  {id:'laundry', t:'13:00', nm:'洗濯スタート',      sub:'機械回す→そのまま掃除', core:false},
-  {id:'clean1',  t:'13:10', nm:'掃除①',           sub:'洗濯中に並行・1時間',   core:false},
-  {id:'clean2',  t:'14:10', nm:'掃除②',           sub:'15時までに完了',        core:false},
-  {id:'akiba',   t:'15:00', nm:'秋葉原',           sub:'外出',                 core:false},
-  {id:'restart', t:'19:00', nm:'📍 帰宅・再開',     sub:'ここからラストスパート', core:false},
-  {id:'videdit', t:'19:00', nm:'動画編集',          sub:'2時間',                core:false},
-  {id:'video',   t:'20:00', nm:'動画 5分',         sub:'開いて1カット',         core:true},
-  {id:'pot',     t:'21:00', nm:'ポット',           sub:'IG1投稿 / 短期1個',    core:true},
-  {id:'sleep',   t:'22:00', nm:'就寝準備',         sub:'画面オフ',              core:false},
+  {id:'wake',   t:'5:30',  nm:'起床',       sub:'QRで解除',          core:false},
+  {id:'run',    t:'5:45',  nm:'ランニング',  sub:'ルーティン',         core:false},
+  {id:'meal',   t:'6:15',  nm:'弁当＆朝食', sub:'ルーティン',         core:false},
+  {id:'prep',   t:'6:45',  nm:'身支度',     sub:'ルーティン',         core:false},
+  {id:'work',   t:'7:30',  nm:'出社',       sub:'平日',              core:true},
+  {id:'nenkin', t:'8:30',  nm:'年金の電話', sub:'20分',              core:false},
+  {id:'video',  t:'20:00', nm:'動画作業',   sub:'素材整理続き',       core:true},
+  {id:'pot',    t:'21:00', nm:'ポット',     sub:'IG1投稿 / 短期1個', core:true},
+  {id:'sleep',  t:'22:00', nm:'就寝準備',   sub:'画面オフ',           core:false},
 ];
 
 // Gist設定 (初回のみpromptで入力、以降localStorageに記憶)
@@ -339,9 +332,9 @@ function load() {
     vega:      r.vega      || 0,
     video:     r.video     || 0,
     pot:       r.pot       || [false,false,false,false],
-    short:     r.short     || { vega:'', video:'', pot:'' },
+    short:     r.short     || { video:'台本決めて素材アップロード中', pot:'うちバチ作成＆ジャイロ調整まで進んだら印刷できる' },
     studyPick: r.studyPick || {},
-    aiReview:  r.aiReview  || '',
+    aiReview:  r.aiReview  || '【6/21(土)振り返り】\n\n盛りだくさんの一日でした。昼寝というハプニングがあっても立て直して、秋葉原・掃除・洗濯・動画編集を全部こなせたのは素晴らしい。22時就寝も守れました。\n\n■ 動画\n台本をざっくり決めて素材アップロードも進行中。素材整理フェーズは着実に前進しています。帰宅後に続きを。\n\n■ ポット\nうちバチ作成＆ジャイロ調整まで進んだら印刷できる段階。M1（在庫確保）完了が目前です。\n\n■ 明日（月・平日）\n7:30出社。8:30に年金の電話を忘れずに。夜は動画素材整理の続きとポット作業を。',
     schedule:  r.schedule  || SCHEDULE_DEF.map(t => ({...t})),
     extras:    r.extras    || [],
     comments:  r.comments  || {},
@@ -663,12 +656,6 @@ function render() {
   renderExtras();
 
   // Goals
-  const v = s.vega||0;
-  const vegaCk = [250,500,750,1000];
-  const vegaNodes = vegaCk.map((c,i) => ({ dot: c>=1000?'1K':c, lb:`${c}戦`,
-    state: v>=c?'done':(v>=(vegaCk[i-1]||0)?'cur':''), fn:'' }));
-  const vegaSeg = `${Math.floor(v/250)*250+1}–${Math.min(1000,(Math.floor(v/250)+1)*250)}`;
-
   const VID = ['素材整理','ラフカット','本編集','書き出し'];
   const vidNodes = VID.map((lb,i) => ({ dot:'M'+(i+1), lb,
     state: i<s.video?'done':(i===s.video?'cur':''), fn:'stage' }));
@@ -679,10 +666,6 @@ function render() {
     state: s.pot[i]?'done':(i===potCur?'cur':''), fn:'pot' }));
 
   const goals = [
-    { key:'vega', title:'ベガ 1000戦', pct: Math.round(v/1000*100),
-      long: `<div class="longrow"><span class="big">${v}</span><span class="of">/ 1000戦</span><span class="rem">残り ${Math.max(0,1000-v)}\n約 ${Math.ceil(Math.max(0,1000-v)/10)}日</span></div><div class="track"><i style="width:${Math.min(100,v/1000*100)}%"></i></div>`,
-      mid:  pathHTML(vegaNodes)+`<div class="midnow">いま <b>${vegaSeg}</b> ブロック（あと ${Math.min(1000,(Math.floor(v/250)+1)*250)-v}戦で再照準）</div>`,
-      extra:`<div class="addrow"><button class="minus" data-v="-1">−1</button><button data-v="1">＋1戦</button><button data-v="5">＋5戦</button></div>` },
     { key:'video', title:'動画 一本', pct: Math.round(s.video/(VID.length-1)*100),
       long: `<div class="longrow"><span class="txt">完成（書き出し）まで</span></div>`,
       mid:  pathHTML(vidNodes)+`<div class="midnow">いま <b>M${s.video+1} ${VID[s.video]}</b>（タップで段階を更新）</div>`, extra:'' },
@@ -720,8 +703,8 @@ document.getElementById('copy').onclick = async () => {
   txt += `今日 ${dn.length}/${s.schedule.length} ・ 連続 ${streak()}日\n`;
   if (dn.length) txt += `✅ ${dn.join(' / ')}\n`;
   if (un.length) txt += `⬜ ${un.join(' / ')}\n`;
-  txt += `― 中長期 ―\nベガ ${s.vega||0}/1000 (${Math.round((s.vega||0)/10)}%) ・ 動画 M${s.video+1}${VID[s.video]} ・ ポット ${s.pot.filter(Boolean).length}/4\n`;
-  txt += `― 今日の短期 ―\nベガ: ${s.short.vega||'(未設定)'}\n動画: ${s.short.video||'(未設定)'}\nポット: ${s.short.pot||'(未設定)'}\n`;
+  txt += `― 中長期 ―\n動画 M${s.video+1}${VID[s.video]} ・ ポット ${s.pot.filter(Boolean).length}/4\n`;
+  txt += `― 今日の短期 ―\n動画: ${s.short.video||'(未設定)'}\nポット: ${s.short.pot||'(未設定)'}\n`;
   const allCmts = [];
   s.schedule.forEach(t => { const c = getComments(t.id); if(c.length) allCmts.push(`【${t.nm}】\n`+c.map(x=>`  ${x.time} ${x.text}`).join('\n')); });
   s.extras.forEach(t => { const c = getComments(t.id); if(c.length) allCmts.push(`【${t.nm}】\n`+c.map(x=>`  ${x.time} ${x.text}`).join('\n')); });
