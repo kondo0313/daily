@@ -231,25 +231,23 @@
   </div>
 
 <script>
-const LS = 'system.v3';
+const LS = 'system.v4';
 
 const SCHEDULE_DEF = [
-  {id:'wake',    t:'5:45',  nm:'起床',                sub:'QRで解除',            core:false},
-  {id:'wake2',   t:'6:00',  nm:'起床 予備',            sub:'保険',                core:false},
-  {id:'laundry', t:'6:10',  nm:'洗濯',                sub:'30分',               core:false},
-  {id:'run',     t:'6:40',  nm:'ランニング',            sub:'ルーティン',           core:false},
-  {id:'meal',    t:'7:10',  nm:'弁当＆朝食',           sub:'ルーティン',           core:false},
-  {id:'study',   t:'7:45',  nm:'アラームの修正',        sub:'今日のみ',             core:true},
-  {id:'prep',    t:'8:30',  nm:'身支度',               sub:'ルーティン',           core:false},
-  {id:'clean1',  t:'9:00',  nm:'掃除①',               sub:'1時間',               core:false},
-  {id:'clean2',  t:'10:00', nm:'掃除②',               sub:'1時間',               core:false},
-  {id:'akiba',   t:'11:30', nm:'秋葉原',               sub:'外出',                core:false},
-  {id:'read',    t:'14:00', nm:'本を読む',              sub:'1時間',               core:false},
-  {id:'videdit', t:'16:00', nm:'動画編集',              sub:'2時間',               core:false},
-  {id:'3dp',     t:'18:00', nm:'3Dプリンタ',           sub:'コントローラー 2時間',  core:false},
-  {id:'video',   t:'20:00', nm:'動画 5分',             sub:'開いて1カット',        core:true},
-  {id:'pot',     t:'21:00', nm:'ポット',               sub:'IG1投稿 / 短期1個',   core:true},
-  {id:'sleep',   t:'22:00', nm:'就寝準備',             sub:'画面オフ',             core:false},
+  {id:'wake',    t:'5:45',  nm:'起床',          sub:'QRで解除',          core:false},
+  {id:'wake2',   t:'6:00',  nm:'起床 予備',      sub:'保険',              core:false},
+  {id:'laundry', t:'6:10',  nm:'洗濯',          sub:'30分',              core:false},
+  {id:'run',     t:'6:40',  nm:'ランニング',      sub:'ルーティン',        core:false},
+  {id:'meal',    t:'7:10',  nm:'弁当＆朝食',     sub:'ルーティン',        core:false},
+  {id:'study',   t:'7:45',  nm:'アラームの修正',  sub:'今日のみ',          core:true},
+  {id:'prep',    t:'8:30',  nm:'身支度',         sub:'ルーティン',        core:false},
+  {id:'nap',     t:'12:00', nm:'💤 昼寝',        sub:'やってしまった',     core:false},
+  {id:'clean1',  t:'15:00', nm:'掃除①',         sub:'1時間 ★必須',      core:false},
+  {id:'clean2',  t:'16:00', nm:'掃除②',         sub:'1時間 ★必須',      core:false},
+  {id:'akiba',   t:'17:00', nm:'秋葉原',         sub:'外出',              core:false},
+  {id:'video',   t:'20:00', nm:'動画 5分',       sub:'開いて1カット',     core:true},
+  {id:'pot',     t:'21:00', nm:'ポット',         sub:'IG1投稿 / 短期1個', core:true},
+  {id:'sleep',   t:'22:00', nm:'就寝準備',       sub:'画面オフ ★必須',   core:false},
 ];
 
 // Gist設定 (初回のみpromptで入力、以降localStorageに記憶)
