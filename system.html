@@ -19,9 +19,9 @@
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   html{background:var(--bg)}
   body{font-family:var(--ui);background:radial-gradient(120% 60% at 50% -10%, #20203033, transparent 70%), var(--bg);
-    color:var(--ink);max-width:540px;margin:0 auto;padding:0 16px 70px;min-height:100vh;-webkit-font-smoothing:antialiased}
+    color:var(--ink);max-width:540px;margin:0 auto;padding:0 16px 80px;min-height:100vh;-webkit-font-smoothing:antialiased}
 
-  .bar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;padding:16px 4px 14px;
+  .bar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:14px 4px 12px;
     background:linear-gradient(var(--bg) 70%, transparent);backdrop-filter:blur(2px)}
   .bar .date{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.5px}
   .bar .clock{font-family:var(--mono);font-size:13px;color:var(--ink);font-weight:600}
@@ -33,17 +33,35 @@
   .pill.sync.ok{color:var(--done);border-color:#2a463c}
   .pill.sync.err{color:var(--hot);border-color:#4a2a33}
 
-  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:2.5px;color:var(--faint);text-transform:uppercase;margin:24px 4px 12px;display:flex;align-items:center;gap:8px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:2.5px;color:var(--faint);text-transform:uppercase;margin:22px 4px 10px;display:flex;align-items:center;gap:8px}
   .eyebrow::after{content:'';flex:1;height:1px;background:var(--line)}
 
-  /* AI Review */
+  /* ── TODAY FOCUS ── */
+  .focus-wrap{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:4px}
+  .focus-row{display:flex;gap:12px;padding:13px 15px;border-bottom:1px solid var(--line)}
+  .focus-row:last-child{border-bottom:none}
+  .focus-icon{font-size:20px;flex:none;width:26px;text-align:center;padding-top:1px}
+  .focus-body{flex:1;min-width:0}
+  .focus-label{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--faint);text-transform:uppercase;margin-bottom:5px;display:flex;align-items:center;gap:7px}
+  .focus-today{font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;line-height:1.45}
+  .focus-today.empty{color:var(--hot);font-style:italic;font-weight:400;font-size:13px}
+  .focus-today:active{opacity:.7}
+  .focus-week{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5;padding-left:1px}
+  .focus-week b{color:var(--gold)}
+  .pace-chip{font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;display:inline-flex;align-items:center;gap:3px}
+  .pace-chip.ok{color:var(--done);background:#5bd6a610;border:1px solid #2a463c}
+  .pace-chip.warn{color:var(--gold);background:#f2b14b10;border:1px solid #4a3d2a}
+  .pace-chip.danger{color:var(--hot);background:#ff527710;border:1px solid #4a2a33}
+  .pace-chip.none{color:var(--faint);border:1px solid var(--line)}
+
+  /* ── AI REVIEW ── */
   .review-card{background:linear-gradient(135deg,#1e1e2e,#1a1a2e);border:1px solid #3a3a5a;border-radius:14px;padding:16px;margin-bottom:8px}
   .review-card .review-head{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--faint);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
   .review-card .review-head::after{content:'';flex:1;height:1px;background:#3a3a5a}
-  .review-card .review-body{font-size:13.5px;line-height:1.75;color:var(--ink);white-space:pre-wrap;max-height:240px;overflow-y:auto}
+  .review-card .review-body{font-size:13.5px;line-height:1.75;color:var(--ink);white-space:pre-wrap;max-height:220px;overflow-y:auto}
   .review-card .review-body.empty{color:var(--faint);font-style:italic}
 
-  /* Tasks */
+  /* ── TASKS ── */
   .task-wrap{margin-bottom:8px}
   .task{display:flex;align-items:center;gap:13px;background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:14px 15px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
   .task:active{transform:scale(.99)}
@@ -62,7 +80,6 @@
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
   @media (prefers-reduced-motion:reduce){.task.now::before{animation:none}}
 
-  /* Task edit panel */
   .task-edit{background:var(--panel-2);border:1px solid var(--gold);border-top:none;border-radius:0 0 13px 13px;padding:13px 14px}
   .edit-row{display:flex;gap:8px;margin-bottom:8px}
   .edit-time{width:72px;flex:none;background:var(--bg);border:1px solid var(--line);border-radius:7px;color:var(--ink);font-family:var(--mono);font-size:13px;padding:7px 10px;outline:none}
@@ -80,7 +97,7 @@
   .add-task-btn{width:100%;margin-top:4px;padding:12px;border-radius:11px;border:1px dashed var(--line);background:transparent;color:var(--faint);font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px}
   .add-task-btn:active{border-color:var(--gold);color:var(--gold)}
 
-  /* Comment section */
+  /* Comments */
   .cmts{display:none;background:var(--panel-2);border:1px solid var(--line);border-top:none;border-radius:0 0 13px 13px;padding:10px 12px}
   .cmts.open{display:block}
   .cmt-item{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--line)}
@@ -101,7 +118,6 @@
   .cmt-add textarea{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-family:var(--ui);font-size:13px;padding:7px 10px;resize:none;min-height:36px;outline:none}
   .cmt-add textarea:focus{border-color:var(--gold)}
   .cmt-add button{flex:none;font-family:var(--mono);font-size:12px;font-weight:700;padding:0 13px;border-radius:8px;border:none;background:var(--gold);color:var(--bg);cursor:pointer;height:36px;align-self:flex-end}
-
   .cmtbtn{flex:none;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--muted);background:var(--panel-2);border:1px solid var(--line);border-radius:7px;padding:6px 8px;cursor:pointer;margin-right:2px}
   .cmtbtn.has{color:var(--gold);border-color:#4a3d2a}
   .cmtbtn:active{background:#2e2e40}
@@ -131,25 +147,27 @@
   .add-extra input:focus{border-color:var(--gold)}
   .add-extra button{flex:none;font-family:var(--mono);font-size:12px;font-weight:700;padding:0 14px;border-radius:9px;border:none;background:var(--gold);color:var(--bg);cursor:pointer;height:40px}
 
-  /* Goals */
+  /* ── GOALS ── */
   .goal{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px 16px;margin-bottom:11px}
-  .goal .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .goal .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
   .goal .title{font-size:15px;font-weight:700}
   .goal .pct{font-family:var(--mono);font-size:15px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
-  .tier{margin-bottom:13px}
+  .goal-meta{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+  .goal-dl-btn{font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;padding:4px 10px;border-radius:7px;border:1px solid var(--line);background:var(--panel-2);display:inline-flex;align-items:center;gap:5px}
+  .goal-dl-btn:active{border-color:var(--gold);color:var(--gold)}
+  .goal-dl-btn.set{color:var(--gold);border-color:#4a3d2a}
+  .pace-row{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .tier{margin-bottom:14px}
   .tier:last-child{margin-bottom:0}
-  .tlabel{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--faint);margin-bottom:6px}
-  .longrow{display:flex;align-items:baseline;gap:8px;font-family:var(--mono);margin-bottom:8px}
-  .longrow .big{font-size:26px;font-weight:800;color:var(--hot);line-height:1;font-variant-numeric:tabular-nums}
-  .longrow .of{font-size:13px;color:var(--muted)}
-  .longrow .rem{margin-left:auto;font-size:11px;color:var(--faint);white-space:pre;text-align:right;line-height:1.4}
+  .tlabel{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--faint);margin-bottom:7px;text-transform:uppercase}
   .longrow .txt{font-size:13px;color:var(--ink)}
-  .track{height:7px;background:#121219;border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+  .track{height:6px;background:#121219;border-radius:99px;overflow:hidden;border:1px solid var(--line);margin-top:10px}
   .track>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--hot),var(--gold));transition:width .4s cubic-bezier(.2,.8,.2,1)}
   .path{display:flex;align-items:flex-start}
   .node{flex:1;text-align:center;position:relative;cursor:pointer;padding:2px 1px}
   .node .dot{width:24px;height:24px;border-radius:50%;margin:0 auto 6px;border:2px solid var(--line);background:var(--bg);display:grid;place-items:center;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--faint);transition:.15s;position:relative;z-index:1}
   .node .lb{font-size:10px;color:var(--faint);line-height:1.25}
+  .node .dl{font-family:var(--mono);font-size:9px;color:var(--faint);margin-top:2px;opacity:.7}
   .node:not(:last-child)::after{content:'';position:absolute;top:12px;left:50%;width:100%;height:2px;background:var(--line);z-index:0}
   .node.done .dot{border-color:var(--done);color:var(--done)}
   .node.done::after{background:var(--done)}
@@ -157,14 +175,20 @@
   .node.cur .lb{color:var(--gold);font-weight:700}
   .midnow{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:9px;text-align:center}
   .midnow b{color:var(--gold)}
-  .addrow{display:flex;gap:7px;margin-top:11px}
-  .addrow button{flex:1;font-family:var(--mono);font-weight:700;font-size:13px;padding:9px 0;background:var(--panel-2);color:var(--ink);border:1px solid var(--line);border-radius:9px;cursor:pointer}
-  .addrow button:active{background:#2e2e40}
-  .addrow button.minus{flex:0 0 44px;color:var(--faint)}
   .shortbox{display:flex;gap:9px;align-items:flex-start;cursor:pointer;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
   .shortbox .v{flex:1;font-size:13.5px;line-height:1.45;color:var(--ink)}
   .shortbox .v.empty{color:var(--hot);font-weight:500}
   .shortbox:active{opacity:.7}
+  .shortbox .edit-hint{font-size:11px;color:var(--faint);flex:none;align-self:center}
+  .week-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px}
+  .week-val{font-size:12px;color:var(--muted);line-height:1.4;flex:1}
+  .week-val.empty{color:var(--faint);font-style:italic}
+  .week-edit-btn{font-family:var(--mono);font-size:10px;color:var(--faint);background:none;border:1px solid var(--line);cursor:pointer;padding:2px 8px;border-radius:5px;white-space:nowrap}
+  .week-edit-btn:active{color:var(--gold);border-color:var(--gold)}
+  .mstone-dl-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+  .mstone-dl-chip{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:5px;border:1px solid var(--line);background:var(--panel-2);color:var(--faint);cursor:pointer}
+  .mstone-dl-chip.set{color:var(--gold);border-color:#4a3d2a}
+  .mstone-dl-chip:active{opacity:.7}
 
   .copy{width:100%;margin-top:6px;padding:15px;border-radius:13px;cursor:pointer;font-family:var(--ui);font-weight:700;font-size:15px;border:1px solid var(--line);background:var(--panel);color:var(--ink);display:flex;align-items:center;justify-content:center;gap:8px}
   .copy:active{background:var(--panel-2)}
@@ -196,6 +220,9 @@
     <div class="pill sync" id="syncPill" onclick="manualSync()">⇅ sync</div>
   </div>
 
+  <div class="eyebrow">今日のフォーカス（逆算）</div>
+  <div class="focus-wrap" id="focusWrap"></div>
+
   <div class="eyebrow">AI レビュー</div>
   <div class="review-card">
     <div class="review-head">morning review</div>
@@ -213,7 +240,7 @@
     <button onclick="addExtra()">+ 追加</button>
   </div>
 
-  <div class="eyebrow">目標 ・ 長期 → 中期 → 今日</div>
+  <div class="eyebrow">ゴール管理（逆算）</div>
   <div id="goals"></div>
 
   <button class="copy" id="copy">状況をコピー → Claudeへ</button>
@@ -231,7 +258,7 @@
   </div>
 
 <script>
-const LS = 'system.v7';
+const LS = 'system.v8';
 
 const SCHEDULE_DEF = [
   {id:'wake',   t:'5:30',  nm:'起床',       sub:'QRで解除',          core:false},
@@ -245,7 +272,7 @@ const SCHEDULE_DEF = [
   {id:'sleep',  t:'22:00', nm:'就寝準備',   sub:'画面オフ',           core:false},
 ];
 
-// Gist設定 (初回のみpromptで入力、以降localStorageに記憶)
+// ── GIST ──
 function getGistCreds() {
   let gid = localStorage.getItem('gist-id');
   let gtk = localStorage.getItem('gist-token');
@@ -269,20 +296,20 @@ async function pullGist() {
     const f = j.files && j.files[GIST_FILE];
     if (!f) { setSyncStatus('ok'); return; }
     const data = JSON.parse(f.content);
-    if (data.short)    s.short    = { ...s.short, ...data.short };
-    if (data.aiReview) s.aiReview = data.aiReview;
-    if (data.schedule) s.schedule = data.schedule;
+    if (data.short)          s.short          = { ...s.short, ...data.short };
+    if (data.aiReview)       s.aiReview       = data.aiReview;
+    if (data.schedule)       s.schedule       = data.schedule;
+    if (data.weeklyFocus)    s.weeklyFocus    = { ...s.weeklyFocus, ...data.weeklyFocus };
+    if (data.goalDeadlines)  s.goalDeadlines  = { ...s.goalDeadlines, ...data.goalDeadlines };
+    if (data.mstoneDates)    s.mstoneDates    = { ...s.mstoneDates, ...data.mstoneDates };
     if (data.progress) {
-      if (data.progress.vega  != null) s.vega  = data.progress.vega;
       if (data.progress.video != null) s.video = data.progress.video;
       if (data.progress.pot   != null) s.pot   = data.progress.pot;
       if (data.progress.log)           s.log   = { ...s.log, ...data.progress.log };
     }
     if (data.extras)   s.extras   = data.extras;
     if (data.comments) s.comments = data.comments;
-    save(false);
-    render();
-    setSyncStatus('ok');
+    save(false); render(); setSyncStatus('ok');
   } catch(e) { console.warn('pull失敗', e); setSyncStatus('err'); }
 }
 
@@ -294,13 +321,16 @@ function pushGist() {
     setSyncStatus('syncing');
     try {
       const payload = {
-        progress: { vega: s.vega, video: s.video, pot: s.pot, log: s.log },
-        short:    s.short,
-        aiReview: s.aiReview,
-        schedule: s.schedule,
-        extras:   s.extras,
-        comments: s.comments,
-        updated:  Date.now(),
+        progress:      { video: s.video, pot: s.pot, log: s.log },
+        short:         s.short,
+        aiReview:      s.aiReview,
+        schedule:      s.schedule,
+        weeklyFocus:   s.weeklyFocus,
+        goalDeadlines: s.goalDeadlines,
+        mstoneDates:   s.mstoneDates,
+        extras:        s.extras,
+        comments:      s.comments,
+        updated:       Date.now(),
       };
       await fetch(`https://api.github.com/gists/${gid}`, {
         method: 'PATCH',
@@ -319,8 +349,10 @@ function setSyncStatus(state) {
 }
 function manualSync() { const c = getGistCreds(); if (c.gid && c.gtk) pullGist(); }
 
-// ===== STATE =====
+// ── STATE ──
 const WD = ['日','月','火','水','木','金','土'];
+const VID_LABELS = ['素材整理','ラフカット','本編集','書き出し'];
+const POT_LABELS = ['在庫(PETG)','ショップ開設','IGで認知','初売上'];
 let editingId = null;
 
 let s = load();
@@ -328,16 +360,18 @@ function load() {
   let r = {};
   try { r = JSON.parse(localStorage.getItem(LS)) || {}; } catch(e) {}
   return {
-    log:       r.log       || {},
-    vega:      r.vega      || 0,
-    video:     r.video     || 0,
-    pot:       r.pot       || [false,false,false,false],
-    short:     r.short     || { video:'台本決めて素材アップロード中', pot:'うちバチ作成＆ジャイロ調整まで進んだら印刷できる' },
-    studyPick: r.studyPick || {},
-    aiReview:  r.aiReview  || '【6/21(土)振り返り】\n\n盛りだくさんの一日でした。昼寝というハプニングがあっても立て直して、秋葉原・掃除・洗濯・動画編集を全部こなせたのは素晴らしい。22時就寝も守れました。\n\n■ 動画\n台本をざっくり決めて素材アップロードも進行中。素材整理フェーズは着実に前進しています。帰宅後に続きを。\n\n■ ポット\nうちバチ作成＆ジャイロ調整まで進んだら印刷できる段階。M1（在庫確保）完了が目前です。\n\n■ 明日（月・平日）\n7:30出社。8:30に年金の電話を忘れずに。夜は動画素材整理の続きとポット作業を。',
-    schedule:  r.schedule  || SCHEDULE_DEF.map(t => ({...t})),
-    extras:    r.extras    || [],
-    comments:  r.comments  || {},
+    log:           r.log           || {},
+    video:         r.video         || 0,
+    pot:           r.pot           || [false,false,false,false],
+    short:         r.short         || { video:'台本決めて素材アップロード中', pot:'うちバチ作成＆ジャイロ調整まで進んだら印刷できる' },
+    studyPick:     r.studyPick     || {},
+    aiReview:      r.aiReview      || '【6/21(土)振り返り】\n\n盛りだくさんの一日でした。昼寝というハプニングがあっても立て直して、秋葉原・掃除・洗濯・動画編集を全部こなせたのは素晴らしい。22時就寝も守れました。\n\n■ 動画\n台本をざっくり決めて素材アップロードも進行中。素材整理フェーズは着実に前進しています。帰宅後に続きを。\n\n■ ポット\nうちバチ作成＆ジャイロ調整まで進んだら印刷できる段階。M1（在庫確保）完了が目前です。\n\n■ 明日（月・平日）\n7:30出社。8:30に年金の電話を忘れずに。夜は動画素材整理の続きとポット作業を。',
+    schedule:      r.schedule      || SCHEDULE_DEF.map(t => ({...t})),
+    extras:        r.extras        || [],
+    comments:      r.comments      || {},
+    goalDeadlines: r.goalDeadlines || { video: '', pot: '' },
+    weeklyFocus:   r.weeklyFocus   || { video: '', pot: '' },
+    mstoneDates:   r.mstoneDates   || { video: ['','','',''], pot: ['','','',''] },
   };
 }
 function save(sync = true) {
@@ -360,45 +394,80 @@ function streak() {
   return n;
 }
 
-// ===== TOGGLE =====
+// ── PACE CALC ──
+function daysUntil(dateStr) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr); d.setHours(12,0,0,0);
+  const t = new Date(); t.setHours(12,0,0,0);
+  return Math.round((d - t) / 86400000);
+}
+function getPace(key) {
+  const days = daysUntil(s.goalDeadlines[key]);
+  if (days === null) return null;
+  const remaining = key === 'video'
+    ? (VID_LABELS.length - 1 - s.video)
+    : (POT_LABELS.length - s.pot.filter(Boolean).length);
+  if (remaining === 0) return { done: true };
+  if (days <= 0) return { overdue: true, days };
+  const dps = days / remaining;
+  const status = dps >= 14 ? 'ok' : dps >= 7 ? 'warn' : 'danger';
+  return { status, days, remaining, dps: Math.round(dps) };
+}
+function paceChipHTML(pace) {
+  if (!pace) return `<span class="pace-chip none">期限未設定</span>`;
+  if (pace.done) return `<span class="pace-chip ok">✓ 完了</span>`;
+  if (pace.overdue) return `<span class="pace-chip danger">🔴 期限超過 ${Math.abs(pace.days)}日</span>`;
+  const dot = pace.status === 'ok' ? '🟢' : pace.status === 'warn' ? '🟡' : '🔴';
+  return `<span class="pace-chip ${pace.status}">${dot} 期限まで${pace.days}日</span>`;
+}
+
+// ── ACTIONS ──
 function toggle(id) {
   const k = key(); const set = doneSet(k);
   set.has(id) ? set.delete(id) : set.add(id);
   s.log[k] = [...set]; save(); render();
 }
-function vegaInc(d) {
-  s.vega = Math.max(0, (s.vega||0) + d);
-  if (d > 0) { const set = doneSet(key()); set.add('vega'); s.log[key()] = [...set]; }
-  save(); render();
-}
 function setStage(i) { s.video = i; save(); render(); }
 function togglePot(i) { s.pot[i] = !s.pot[i]; save(); render(); }
-function setStudy(p) { const k = key(); s.studyPick[k] = (s.studyPick[k]===p ? '' : p); save(); render(); }
 function editShort(g) {
-  const v = prompt('今日の具体的な一手:', s.short[g]||'');
+  const v = prompt('今日のアクション:', s.short[g]||'');
   if (v !== null) { s.short[g] = v.trim(); save(); render(); }
 }
+function editWeeklyFocus(g) {
+  const v = prompt('今週の目標:', s.weeklyFocus[g]||'');
+  if (v !== null) { s.weeklyFocus[g] = v.trim(); save(); render(); }
+}
+function editDeadline(g) {
+  const v = prompt(`最終期限 (YYYY-MM-DD)\n例: 2026-07-31`, s.goalDeadlines[g]||'');
+  if (v !== null) { s.goalDeadlines[g] = v.trim(); save(); render(); }
+}
+function editMstoneDate(g, i) {
+  const lb = g === 'video' ? VID_LABELS[i] : POT_LABELS[i];
+  const v = prompt(`M${i+1} ${lb} 完了期限 (YYYY-MM-DD)`, s.mstoneDates[g][i]||'');
+  if (v !== null) {
+    s.mstoneDates[g] = [...s.mstoneDates[g]];
+    s.mstoneDates[g][i] = v.trim();
+    save(); render();
+  }
+}
 
-// ===== SCHEDULE TASK MANAGEMENT =====
+// ── SCHEDULE TASK MANAGEMENT ──
 function addSchedTask() {
   const id = 'task-' + Date.now();
   s.schedule.push({ id, t: '12:00', nm: '新しいタスク', sub: '', core: false });
   s.schedule.sort((a, b) => mins(a.t) - mins(b.t));
   editingId = id;
   save(); render();
-  // scroll to the new task
   setTimeout(() => {
     const el = document.getElementById('edit-' + id);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, 50);
 }
-
 function startEdit(id, e) {
   e.stopPropagation();
   editingId = (editingId === id) ? null : id;
   render();
 }
-
 function saveEdit(id) {
   const t = s.schedule.find(x => x.id === id);
   if (!t) return;
@@ -413,17 +482,15 @@ function saveEdit(id) {
   editingId = null;
   save(); render();
 }
-
 function deleteSchedTask(id, e) {
   e.stopPropagation();
   s.schedule = s.schedule.filter(x => x.id !== id);
-  // also remove comments for this task
   delete s.comments[id];
   editingId = null;
   save(); render();
 }
 
-// ===== QR =====
+// ── QR ──
 function openQR(id, name) {
   document.getElementById('qrTitle').textContent = name + ' のQR';
   document.getElementById('qrSub').textContent = 'このアラームを止める専用コード';
@@ -435,10 +502,9 @@ function openQR(id, name) {
 }
 function closeQR() { document.getElementById('qrModal').classList.remove('open'); }
 
-// ===== COMMENTS =====
+// ── COMMENTS ──
 function getComments(id) { return s.comments[id] || []; }
 function saveComments(id, arr) { s.comments[id] = arr; save(); }
-
 function addComment(id, text) {
   const t = text.trim(); if (!t) return;
   const now = new Date();
@@ -506,7 +572,7 @@ function renderCommentSection(id) {
   });
 }
 
-// ===== EXTRA TASKS =====
+// ── EXTRA TASKS ──
 function addExtra() {
   const inp = document.getElementById('extraInput');
   const nm = inp.value.trim(); if (!nm) return;
@@ -549,14 +615,18 @@ function renderExtras() {
   });
 }
 
-// ===== PATH HELPER =====
+// ── PATH HELPER ──
 function pathHTML(nodes) {
   return `<div class="path">` + nodes.map((n,i) =>
-    `<div class="node ${n.state}" data-fn="${n.fn||''}" data-i="${i}"><div class="dot">${n.dot}</div><div class="lb">${n.lb}</div></div>`
+    `<div class="node ${n.state}" data-fn="${n.fn||''}" data-i="${i}">
+      <div class="dot">${n.dot}</div>
+      <div class="lb">${n.lb}</div>
+      ${n.dl ? `<div class="dl">${n.dl}</div>` : ''}
+    </div>`
   ).join('') + `</div>`;
 }
 
-// ===== MAIN RENDER =====
+// ── MAIN RENDER ──
 function render() {
   const now = new Date(), k = key(now), done = doneSet(k), nowMin = now.getHours()*60+now.getMinutes();
   document.getElementById('date').textContent = `${k.slice(5).replace('-','/')} (${WD[now.getDay()]})`;
@@ -574,7 +644,30 @@ function render() {
     rb.className = 'review-body empty';
   }
 
-  // Find active task
+  // ── TODAY FOCUS (逆算) ──
+  const focusGoals = [
+    { key:'video', icon:'🎬', title:'動画' },
+    { key:'pot',   icon:'🫙', title:'ポット' },
+  ];
+  document.getElementById('focusWrap').innerHTML = focusGoals.map(g => {
+    const today = s.short[g.key];
+    const week  = s.weeklyFocus[g.key];
+    const pace  = getPace(g.key);
+    const chip  = paceChipHTML(pace);
+    return `
+      <div class="focus-row">
+        <div class="focus-icon">${g.icon}</div>
+        <div class="focus-body">
+          <div class="focus-label">${g.title} ${chip}</div>
+          <div class="focus-today${today?'':' empty'}" onclick="editShort('${g.key}')">${esc(today)||'今日のアクションを設定 → タップ'}</div>
+          ${week
+            ? `<div class="focus-week">↑ 今週: <b>${esc(week)}</b></div>`
+            : `<div class="focus-week" style="color:var(--faint);font-style:italic">今週の目標 → 下のゴール管理でタップして設定</div>`}
+        </div>
+      </div>`;
+  }).join('');
+
+  // ── SCHEDULE ──
   let activeId = null;
   const upcoming = s.schedule.filter(t => !done.has(t.id));
   for (const t of s.schedule) { if (mins(t.t) <= nowMin && !done.has(t.id)) activeId = t.id; }
@@ -586,25 +679,20 @@ function render() {
     const wrap = document.createElement('div');
     wrap.className = 'task-wrap';
 
-    // task row
     const el = document.createElement('div');
     el.className = 'task' + (on ? ' done' : '') + (act ? ' now' : '') + (editing ? ' now' : '');
     el.style.borderRadius = editing ? '13px 13px 0 0' : '';
-    let subtxt = t.sub || '';
-    if (t.id === 'study') { const pk = s.studyPick[k]||''; subtxt = pk ? ({ai:'仕事AI',en:'英語',vega:'ベガ'})[pk] : (t.sub || '↓ 今日のを選ぶ'); }
     const cmtCount = getComments(t.id).length;
     el.innerHTML = `
       <div class="t">${t.t}</div>
-      <div class="nm">${esc(t.nm)}<small>${esc(subtxt)}</small></div>
+      <div class="nm">${esc(t.nm)}<small>${esc(t.sub||'')}</small></div>
       <button class="cmtbtn${cmtCount>0?' has':''}" data-cmtbtn="${t.id}" onclick="event.stopPropagation();toggleCmts('${t.id}')">💬${cmtCount>0?' '+cmtCount:''}</button>
       <button class="qrbtn" onclick="event.stopPropagation();openQR('${t.id}','${esc(t.nm)}')">QR</button>
       <button class="editbtn" onclick="startEdit('${t.id}',event)" title="編集">✏️</button>
       <div class="box"><svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 5"/></svg></div>`;
     el.onclick = () => { if (editingId === t.id) return; toggle(t.id); };
-
     wrap.appendChild(el);
 
-    // edit panel
     if (editing) {
       const ep = document.createElement('div');
       ep.className = 'task-edit';
@@ -625,7 +713,6 @@ function render() {
         </div>`;
       wrap.appendChild(ep);
     } else {
-      // comment section (only shown when not editing)
       const cmts = document.createElement('div');
       cmts.className = 'cmts';
       cmts.id = 'cmts-' + t.id;
@@ -637,78 +724,108 @@ function render() {
       wrap.appendChild(cmts);
       renderCommentSection(t.id);
     }
-
     tw.appendChild(wrap);
-
-    // study chips (only when not editing)
-    if (t.id === 'study' && !editing) {
-      const pk = s.studyPick[k]||'';
-      const chips = document.createElement('div');
-      chips.className = 'chips';
-      chips.innerHTML = [['ai','仕事AI'],['en','英語'],['vega','ベガ']].map(([v,l]) =>
-        `<button class="chip${pk===v?' on':''}" data-pick="${v}">${l}</button>`).join('');
-      chips.querySelectorAll('.chip').forEach(c => c.onclick = () => setStudy(c.dataset.pick));
-      tw.appendChild(chips);
-    }
   });
 
   // Extras
   renderExtras();
 
-  // Goals
-  const VID = ['素材整理','ラフカット','本編集','書き出し'];
-  const vidNodes = VID.map((lb,i) => ({ dot:'M'+(i+1), lb,
-    state: i<s.video?'done':(i===s.video?'cur':''), fn:'stage' }));
+  // ── GOALS (逆算マネジメント) ──
+  const vidPct = Math.round(s.video / (VID_LABELS.length - 1) * 100);
+  const potDone = s.pot.filter(Boolean).length;
+  const potPct  = Math.round(potDone / POT_LABELS.length * 100);
+  let potCur = s.pot.findIndex(x => !x); if (potCur < 0) potCur = POT_LABELS.length;
 
-  const POT = ['在庫(PETG)','ショップ開設','IGで認知','初売上'];
-  let potCur = s.pot.findIndex(x=>!x); if (potCur<0) potCur=POT.length;
-  const potNodes = POT.map((lb,i) => ({ dot:'M'+(i+1), lb,
-    state: s.pot[i]?'done':(i===potCur?'cur':''), fn:'pot' }));
+  const vidNodes = VID_LABELS.map((lb, i) => ({
+    dot: 'M'+(i+1), lb,
+    dl: s.mstoneDates.video[i] ? s.mstoneDates.video[i].slice(5).replace('-','/') : '',
+    state: i < s.video ? 'done' : i === s.video ? 'cur' : '',
+    fn: 'stage',
+  }));
+  const potNodes = POT_LABELS.map((lb, i) => ({
+    dot: 'M'+(i+1), lb,
+    dl: s.mstoneDates.pot[i] ? s.mstoneDates.pot[i].slice(5).replace('-','/') : '',
+    state: s.pot[i] ? 'done' : i === potCur ? 'cur' : '',
+    fn: 'pot',
+  }));
 
-  const goals = [
-    { key:'video', title:'動画 一本', pct: Math.round(s.video/(VID.length-1)*100),
-      long: `<div class="longrow"><span class="txt">完成（書き出し）まで</span></div>`,
-      mid:  pathHTML(vidNodes)+`<div class="midnow">いま <b>M${s.video+1} ${VID[s.video]}</b>（タップで段階を更新）</div>`, extra:'' },
-    { key:'pot', title:'ポット販売', pct: Math.round(s.pot.filter(Boolean).length/POT.length*100),
-      long: `<div class="longrow"><span class="txt">初売上 → リピートまで</span></div>`,
-      mid:  pathHTML(potNodes)+`<div class="midnow">いま <b>${potCur<POT.length?'M'+(potCur+1)+' '+POT[potCur]:'完了'}</b>（タップで達成）</div>`, extra:'' },
-  ];
+  function goalCardHTML(key, icon, title, pct, nodes, midnow) {
+    const dl   = s.goalDeadlines[key];
+    const pace = getPace(key);
+    const chip = paceChipHTML(pace);
+    const wf   = s.weeklyFocus[key];
+    const tod  = s.short[key];
+    let paceDetail = '';
+    if (pace && !pace.done && !pace.overdue) {
+      paceDetail = `<div class="pace-row" style="margin-top:5px;margin-bottom:2px">${pace.remaining}段階残り・1段階あたり約<b style="color:var(--gold);margin:0 2px">${pace.dps}日</b>のペースで達成</div>`;
+    }
+    const mstoneChips = nodes.map((n, i) =>
+      `<button class="mstone-dl-chip${n.dl?' set':''}" onclick="editMstoneDate('${key}',${i})">M${i+1} ${n.dl||'期限+'}</button>`
+    ).join('');
+    return `
+      <div class="goal">
+        <div class="top"><span class="title">${icon} ${title}</span><span class="pct">${pct}%</span></div>
+        <div class="goal-meta">
+          <button class="goal-dl-btn${dl?' set':''}" onclick="editDeadline('${key}')">📅 ${dl ? dl.slice(5).replace('-','/') + 'まで' : '最終期限を設定'}</button>
+          ${chip}
+        </div>
+        ${paceDetail}
+        <div class="tier">
+          <div class="tlabel">マイルストーン（タップで進捗更新）</div>
+          ${pathHTML(nodes)}
+          <div class="mstone-dl-row">${mstoneChips}</div>
+          <div class="midnow">${midnow}</div>
+        </div>
+        <div class="tier">
+          <div class="tlabel">今週の目標</div>
+          <div class="week-row">
+            <span class="week-val${wf?'':' empty'}">${esc(wf)||'未設定 — 今週何を完了させる？'}</span>
+            <button class="week-edit-btn" onclick="editWeeklyFocus('${key}')">編集</button>
+          </div>
+        </div>
+        <div class="tier">
+          <div class="tlabel">今日のアクション</div>
+          <div class="shortbox" onclick="editShort('${key}')">
+            <span class="v ${tod?'':'empty'}">${esc(tod)||'→ 今日の具体的な一手をタップして設定'}</span>
+            <span class="edit-hint">✏️</span>
+          </div>
+        </div>
+        <div class="track"><i style="width:${pct}%"></i></div>
+      </div>`;
+  }
 
-  const gw = document.getElementById('goals'); gw.innerHTML = '';
-  goals.forEach(g => {
-    const sv = s.short[g.key];
-    const card = document.createElement('div'); card.className = 'goal';
-    card.innerHTML = `
-      <div class="top"><span class="title">${g.title}</span><span class="pct">${g.pct}%</span></div>
-      <div class="tier"><div class="tlabel">長期</div>${g.long}</div>
-      <div class="tier"><div class="tlabel">中期 マイルストーン</div>${g.mid}${g.extra}</div>
-      <div class="tier"><div class="tlabel">今日の短期（タップ→Claudeと決める）</div>
-        <div class="shortbox" data-short="${g.key}"><span class="v ${sv?'':'empty'}">${sv||'→ タップして決める'}</span></div></div>`;
-    gw.appendChild(card);
-  });
+  const gw = document.getElementById('goals');
+  gw.innerHTML =
+    goalCardHTML('video', '🎬', '動画 一本', vidPct, vidNodes,
+      `いま <b>M${s.video+1} ${VID_LABELS[s.video]}</b>`) +
+    goalCardHTML('pot', '🫙', 'ポット販売', potPct, potNodes,
+      `いま <b>${potCur < POT_LABELS.length ? 'M'+(potCur+1)+' '+POT_LABELS[potCur] : '完了！'}</b>`);
 
-  gw.querySelectorAll('[data-v]').forEach(b => b.onclick = e => { e.stopPropagation(); vegaInc(parseInt(b.dataset.v)); });
   gw.querySelectorAll('.node[data-fn="stage"]').forEach(n => n.onclick = () => setStage(parseInt(n.dataset.i)));
   gw.querySelectorAll('.node[data-fn="pot"]').forEach(n => n.onclick = () => togglePot(parseInt(n.dataset.i)));
-  gw.querySelectorAll('[data-short]').forEach(x => x.onclick = () => editShort(x.dataset.short));
 }
 
-// ===== COPY =====
+// ── COPY ──
 document.getElementById('copy').onclick = async () => {
   const now = new Date(), k = key(now), done = doneSet(k);
   const dn = s.schedule.filter(t => done.has(t.id)).map(t => t.nm);
   const un = s.schedule.filter(t => !done.has(t.id)).map(t => t.nm);
-  const VID = ['素材整理','ラフカット','本編集','書き出し'];
+  const vidPace = getPace('video');
+  const potPace = getPace('pot');
+  const paceStr = p => p ? (p.done ? '完了' : p.overdue ? `期限超過${Math.abs(p.days)}日` : `期限まで${p.days}日・残り${p.remaining}段階`) : '期限未設定';
   let txt = `【SYSTEM ${k.slice(5).replace('-','/')}(${WD[now.getDay()]})】\n`;
   txt += `今日 ${dn.length}/${s.schedule.length} ・ 連続 ${streak()}日\n`;
   if (dn.length) txt += `✅ ${dn.join(' / ')}\n`;
   if (un.length) txt += `⬜ ${un.join(' / ')}\n`;
-  txt += `― 中長期 ―\n動画 M${s.video+1}${VID[s.video]} ・ ポット ${s.pot.filter(Boolean).length}/4\n`;
-  txt += `― 今日の短期 ―\n動画: ${s.short.video||'(未設定)'}\nポット: ${s.short.pot||'(未設定)'}\n`;
+  txt += `\n― ゴール（逆算）―\n`;
+  txt += `🎬 動画 M${s.video+1}${VID_LABELS[s.video]} (${Math.round(s.video/(VID_LABELS.length-1)*100)}%) | ${paceStr(vidPace)}\n`;
+  txt += `   今週: ${s.weeklyFocus.video||'未設定'}\n   今日: ${s.short.video||'未設定'}\n`;
+  txt += `🫙 ポット M${s.pot.filter(Boolean).length+1} (${Math.round(s.pot.filter(Boolean).length/POT_LABELS.length*100)}%) | ${paceStr(potPace)}\n`;
+  txt += `   今週: ${s.weeklyFocus.pot||'未設定'}\n   今日: ${s.short.pot||'未設定'}\n`;
   const allCmts = [];
   s.schedule.forEach(t => { const c = getComments(t.id); if(c.length) allCmts.push(`【${t.nm}】\n`+c.map(x=>`  ${x.time} ${x.text}`).join('\n')); });
   s.extras.forEach(t => { const c = getComments(t.id); if(c.length) allCmts.push(`【${t.nm}】\n`+c.map(x=>`  ${x.time} ${x.text}`).join('\n')); });
-  if (allCmts.length) txt += `― コメント ―\n` + allCmts.join('\n');
+  if (allCmts.length) txt += `\n― コメント ―\n` + allCmts.join('\n');
   try { await navigator.clipboard.writeText(txt); } catch(e) {
     const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
   }
@@ -719,7 +836,7 @@ document.getElementById('copy').onclick = async () => {
 
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-// ===== INIT =====
+// ── INIT ──
 render();
 if (hasCreds()) pullGist();
 setInterval(() => {
