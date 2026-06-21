@@ -231,7 +231,7 @@
   </div>
 
 <script>
-const LS = 'system.v5';
+const LS = 'system.v6';
 
 const SCHEDULE_DEF = [
   {id:'wake',    t:'5:45',  nm:'起床',            sub:'QRで解除',             core:false},
@@ -243,11 +243,13 @@ const SCHEDULE_DEF = [
   {id:'nap',     t:'12:00', nm:'💤 昼寝',          sub:'やってしまった',         core:false},
   {id:'laundry', t:'13:00', nm:'洗濯スタート',      sub:'機械回す→そのまま掃除', core:false},
   {id:'clean1',  t:'13:10', nm:'掃除①',           sub:'洗濯中に並行・1時間',   core:false},
-  {id:'clean2',  t:'14:10', nm:'掃除②',           sub:'15時までに完了 ★',     core:false},
-  {id:'akiba',   t:'15:00', nm:'秋葉原',           sub:'出発',                 core:false},
+  {id:'clean2',  t:'14:10', nm:'掃除②',           sub:'15時までに完了',        core:false},
+  {id:'akiba',   t:'15:00', nm:'秋葉原',           sub:'外出',                 core:false},
+  {id:'restart', t:'19:00', nm:'📍 帰宅・再開',     sub:'ここからラストスパート', core:false},
+  {id:'videdit', t:'19:00', nm:'動画編集',          sub:'2時間',                core:false},
   {id:'video',   t:'20:00', nm:'動画 5分',         sub:'開いて1カット',         core:true},
   {id:'pot',     t:'21:00', nm:'ポット',           sub:'IG1投稿 / 短期1個',    core:true},
-  {id:'sleep',   t:'22:00', nm:'就寝準備',         sub:'画面オフ ★',           core:false},
+  {id:'sleep',   t:'22:00', nm:'就寝準備',         sub:'画面オフ',              core:false},
 ];
 
 // Gist設定 (初回のみpromptで入力、以降localStorageに記憶)
