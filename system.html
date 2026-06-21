@@ -258,18 +258,18 @@
   </div>
 
 <script>
-const LS = 'system.v8';
+const LS = 'system.v9';
 
 const SCHEDULE_DEF = [
-  {id:'wake',   t:'5:30',  nm:'起床',       sub:'QRで解除',          core:false},
-  {id:'run',    t:'5:45',  nm:'ランニング',  sub:'ルーティン',         core:false},
-  {id:'meal',   t:'6:15',  nm:'弁当＆朝食', sub:'ルーティン',         core:false},
-  {id:'prep',   t:'6:45',  nm:'身支度',     sub:'ルーティン',         core:false},
-  {id:'work',   t:'7:30',  nm:'出社',       sub:'平日',              core:true},
-  {id:'nenkin', t:'8:30',  nm:'年金の電話', sub:'20分',              core:false},
-  {id:'video',  t:'20:00', nm:'動画作業',   sub:'素材整理続き',       core:true},
-  {id:'pot',    t:'21:00', nm:'ポット',     sub:'IG1投稿 / 短期1個', core:true},
-  {id:'sleep',  t:'22:00', nm:'就寝準備',   sub:'画面オフ',           core:false},
+  {id:'wake',   t:'5:30',  nm:'起床',       sub:'QRで解除',                  core:false},
+  {id:'run',    t:'5:45',  nm:'ランニング',  sub:'ルーティン',                 core:false},
+  {id:'meal',   t:'6:15',  nm:'弁当＆朝食', sub:'ルーティン',                 core:false},
+  {id:'prep',   t:'6:45',  nm:'身支度',     sub:'ルーティン',                 core:false},
+  {id:'work',   t:'7:30',  nm:'出社',       sub:'平日',                      core:true},
+  {id:'nenkin', t:'8:30',  nm:'年金の電話', sub:'20分',                      core:false},
+  {id:'video',  t:'20:00', nm:'動画作業',   sub:'Day1 素材整理＆カット割り',   core:true},
+  {id:'pot',    t:'21:00', nm:'ポット制作', sub:'ポット完成 → 6/26出品目標',   core:true},
+  {id:'sleep',  t:'22:00', nm:'就寝準備',   sub:'画面オフ',                   core:false},
 ];
 
 // ── GIST ──
@@ -321,16 +321,16 @@ function pushGist() {
     setSyncStatus('syncing');
     try {
       const payload = {
-        progress:      { video: s.video, pot: s.pot, log: s.log },
-        short:         s.short,
-        aiReview:      s.aiReview,
-        schedule:      s.schedule,
-        weeklyFocus:   s.weeklyFocus,
-        goalDeadlines: s.goalDeadlines,
-        mstoneDates:   s.mstoneDates,
-        extras:        s.extras,
-        comments:      s.comments,
-        updated:       Date.now(),
+        progress:     { video: s.video, pot: s.pot, log: s.log },
+        short:        s.short,
+        aiReview:     s.aiReview,
+        schedule:     s.schedule,
+        weeklyFocus:  s.weeklyFocus,
+        goalDeadlines:s.goalDeadlines,
+        mstoneDates:  s.mstoneDates,
+        extras:       s.extras,
+        comments:     s.comments,
+        updated:      Date.now(),
       };
       await fetch(`https://api.github.com/gists/${gid}`, {
         method: 'PATCH',
@@ -352,7 +352,7 @@ function manualSync() { const c = getGistCreds(); if (c.gid && c.gtk) pullGist()
 // ── STATE ──
 const WD = ['日','月','火','水','木','金','土'];
 const VID_LABELS = ['素材整理','ラフカット','本編集','書き出し'];
-const POT_LABELS = ['在庫(PETG)','ショップ開設','IGで認知','初売上'];
+const POT_LABELS = ['ポット作成','メルカリ出品','初売上','継続販売'];
 let editingId = null;
 
 let s = load();
@@ -363,15 +363,15 @@ function load() {
     log:           r.log           || {},
     video:         r.video         || 0,
     pot:           r.pot           || [false,false,false,false],
-    short:         r.short         || { video:'台本決めて素材アップロード中', pot:'うちバチ作成＆ジャイロ調整まで進んだら印刷できる' },
+    short:         r.short         || { video:'素材確認＆カット割り決定', pot:'ポット制作開始（材料確認）' },
     studyPick:     r.studyPick     || {},
-    aiReview:      r.aiReview      || '【6/21(土)振り返り】\n\n盛りだくさんの一日でした。昼寝というハプニングがあっても立て直して、秋葉原・掃除・洗濯・動画編集を全部こなせたのは素晴らしい。22時就寝も守れました。\n\n■ 動画\n台本をざっくり決めて素材アップロードも進行中。素材整理フェーズは着実に前進しています。帰宅後に続きを。\n\n■ ポット\nうちバチ作成＆ジャイロ調整まで進んだら印刷できる段階。M1（在庫確保）完了が目前です。\n\n■ 明日（月・平日）\n7:30出社。8:30に年金の電話を忘れずに。夜は動画素材整理の続きとポット作業を。',
+    aiReview:      r.aiReview      || '【6/21(土)振り返り】\n\n盛りだくさんの一日でした。昼寝というハプニングがあっても立て直して、秋葉原・掃除・洗濯・動画編集を全部こなせたのは素晴らしい。22時就寝も守れました。\n\n■ 動画\n台本決定・素材あり・内容確定。あとはDaVinciで編集を進めるだけ。2週間サイクル（7/4公開目標）でDay1スタート。\n\n■ ポット\n今月中に1個メルカリで売ることを決定。ルート：ポット作成(〜6/25)→メルカリ出品(6/26)→初売上(〜6/30)。まず制作開始。\n\n■ 今週の目標\n動画: 素材整理＆カット割り完了\nポット: 今週中に完成させてメルカリ出品準備',
     schedule:      r.schedule      || SCHEDULE_DEF.map(t => ({...t})),
     extras:        r.extras        || [],
     comments:      r.comments      || {},
-    goalDeadlines: r.goalDeadlines || { video: '', pot: '' },
-    weeklyFocus:   r.weeklyFocus   || { video: '', pot: '' },
-    mstoneDates:   r.mstoneDates   || { video: ['','','',''], pot: ['','','',''] },
+    goalDeadlines: r.goalDeadlines || { video: '2026-07-04', pot: '2026-06-30' },
+    weeklyFocus:   r.weeklyFocus   || { video: '素材整理＆カット割り完了', pot: '今週中にポット完成' },
+    mstoneDates:   r.mstoneDates   || { video: ['2026-06-23','2026-06-28','2026-07-02','2026-07-04'], pot: ['2026-06-25','2026-06-26','2026-06-30','2026-07-31'] },
   };
 }
 function save(sync = true) {
@@ -798,7 +798,7 @@ function render() {
   gw.innerHTML =
     goalCardHTML('video', '🎬', '動画 一本', vidPct, vidNodes,
       `いま <b>M${s.video+1} ${VID_LABELS[s.video]}</b>`) +
-    goalCardHTML('pot', '🫙', 'ポット販売', potPct, potNodes,
+    goalCardHTML('pot', '🫙', 'ポット メルカリ販売', potPct, potNodes,
       `いま <b>${potCur < POT_LABELS.length ? 'M'+(potCur+1)+' '+POT_LABELS[potCur] : '完了！'}</b>`);
 
   gw.querySelectorAll('.node[data-fn="stage"]').forEach(n => n.onclick = () => setStage(parseInt(n.dataset.i)));
