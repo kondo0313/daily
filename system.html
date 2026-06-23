@@ -258,18 +258,18 @@
   </div>
 
 <script>
-const LS = 'system.v9';
+const LS = 'system.v10';
 
 const SCHEDULE_DEF = [
-  {id:'wake',   t:'5:30',  nm:'起床',       sub:'QRで解除',                  core:false},
-  {id:'run',    t:'5:45',  nm:'ランニング',  sub:'ルーティン',                 core:false},
-  {id:'meal',   t:'6:15',  nm:'弁当＆朝食', sub:'ルーティン',                 core:false},
-  {id:'prep',   t:'6:45',  nm:'身支度',     sub:'ルーティン',                 core:false},
-  {id:'work',   t:'7:30',  nm:'出社',       sub:'平日',                      core:true},
-  {id:'nenkin', t:'8:30',  nm:'年金の電話', sub:'20分',                      core:false},
-  {id:'video',  t:'20:00', nm:'動画作業',   sub:'Day1 素材整理＆カット割り',   core:true},
-  {id:'pot',    t:'21:00', nm:'ポット制作', sub:'ポット完成 → 6/26出品目標',   core:true},
-  {id:'sleep',  t:'22:00', nm:'就寝準備',   sub:'画面オフ',                   core:false},
+  {id:'wake',  t:'5:30',  nm:'起床',       sub:'QRで解除',                core:false},
+  {id:'run',   t:'5:45',  nm:'ランニング',  sub:'ルーティン',               core:false},
+  {id:'meal',  t:'6:15',  nm:'弁当＆朝食', sub:'ルーティン',               core:false},
+  {id:'prep',  t:'6:45',  nm:'身支度',     sub:'ルーティン',               core:false},
+  {id:'work',  t:'7:30',  nm:'出社',       sub:'平日',                    core:true},
+  {id:'video', t:'19:00', nm:'動画作業',   sub:'Day1 素材整理＆カット割り', core:true},
+  {id:'pot',   t:'20:00', nm:'ポット制作', sub:'今日明日で完成 → 出品へ',   core:true},
+  {id:'read',  t:'21:30', nm:'読書',       sub:'就寝前 〜30分',            core:true},
+  {id:'sleep', t:'22:00', nm:'就寝',       sub:'22時消灯厳守',             core:true},
 ];
 
 // ── GIST ──
@@ -363,15 +363,15 @@ function load() {
     log:           r.log           || {},
     video:         r.video         || 0,
     pot:           r.pot           || [false,false,false,false],
-    short:         r.short         || { video:'素材確認＆カット割り決定', pot:'ポット制作開始（材料確認）' },
+    short:         r.short         || { video:'素材整理＆カット割り（今日こそDay1）', pot:'ポット制作（今日明日完成目標）' },
     studyPick:     r.studyPick     || {},
-    aiReview:      r.aiReview      || '【6/21(土)振り返り】\n\n盛りだくさんの一日でした。昼寝というハプニングがあっても立て直して、秋葉原・掃除・洗濯・動画編集を全部こなせたのは素晴らしい。22時就寝も守れました。\n\n■ 動画\n台本決定・素材あり・内容確定。あとはDaVinciで編集を進めるだけ。2週間サイクル（7/4公開目標）でDay1スタート。\n\n■ ポット\n今月中に1個メルカリで売ることを決定。ルート：ポット作成(〜6/25)→メルカリ出品(6/26)→初売上(〜6/30)。まず制作開始。\n\n■ 今週の目標\n動画: 素材整理＆カット割り完了\nポット: 今週中に完成させてメルカリ出品準備',
+    aiReview:      r.aiReview      || '【6/23(月)スタート】\n\n2日間用事があって進捗が止まった。でも状況は悪くない。\n\n■ 動画\n2日遅れだが素材・内容・方針は全部揃ってる。今日19時から1時間でDay1を完走する。カット割りまで決めればラフカットに入れる。\n\n■ ポット\n制作が進んでいる。今日明日でモデル完成見込み → 6/26出品がまだ現実的。\n\n■ 今日のルール\n22時消灯を最優先。19時帰宅・21:30読書・22時就寝のルーティンを守る。',
     schedule:      r.schedule      || SCHEDULE_DEF.map(t => ({...t})),
     extras:        r.extras        || [],
     comments:      r.comments      || {},
-    goalDeadlines: r.goalDeadlines || { video: '2026-07-04', pot: '2026-06-30' },
-    weeklyFocus:   r.weeklyFocus   || { video: '素材整理＆カット割り完了', pot: '今週中にポット完成' },
-    mstoneDates:   r.mstoneDates   || { video: ['2026-06-23','2026-06-28','2026-07-02','2026-07-04'], pot: ['2026-06-25','2026-06-26','2026-06-30','2026-07-31'] },
+    goalDeadlines: r.goalDeadlines || { video: '2026-07-07', pot: '2026-06-30' },
+    weeklyFocus:   r.weeklyFocus   || { video: '素材整理＆カット割り完了', pot: '今日明日でモデル完成・6/26出品' },
+    mstoneDates:   r.mstoneDates   || { video: ['2026-06-25','2026-07-01','2026-07-04','2026-07-07'], pot: ['2026-06-25','2026-06-26','2026-06-30','2026-07-31'] },
   };
 }
 function save(sync = true) {
