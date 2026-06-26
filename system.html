@@ -65,7 +65,8 @@
   .task-wrap{margin-bottom:8px}
   .task{display:flex;align-items:center;gap:13px;background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:14px 15px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
   .task:active{transform:scale(.99)}
-  .task .t{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--muted);width:46px;flex:none}
+  .task .t{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--muted);width:auto;flex:none;white-space:nowrap}
+  .task .tend{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--faint);margin-left:1px}
   .task .nm{flex:1;font-size:15.5px;font-weight:500}
   .task .nm small{display:block;font-size:11px;color:var(--faint);font-weight:400;margin-top:1px}
   .box{width:26px;height:26px;flex:none;border-radius:8px;border:2px solid var(--faint);display:grid;place-items:center;transition:.15s}
@@ -87,6 +88,10 @@
   .edit-time:focus,.edit-nm:focus{border-color:var(--gold)}
   .edit-sub{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:7px;color:var(--ink);font-family:var(--ui);font-size:12px;padding:6px 10px;outline:none;margin-bottom:9px}
   .edit-sub:focus{border-color:var(--gold)}
+  .edit-planb{width:100%;background:var(--bg);border:1px solid #3a3a5a;border-radius:7px;color:var(--ink);font-family:var(--ui);font-size:12px;padding:6px 10px;outline:none;margin-bottom:9px}
+  .edit-planb:focus{border-color:var(--gold)}
+  .planb-label{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--faint);margin-bottom:5px;text-transform:uppercase}
+  .task .planb-badge{font-family:var(--mono);font-size:10px;color:#8888cc;background:#2a2a4a;border:1px solid #3a3a5a;border-radius:5px;padding:2px 7px;margin-top:3px;display:inline-block}
   .core-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;color:var(--muted);cursor:pointer}
   .edit-btns{display:flex;gap:7px}
   .ebtn-save{font-family:var(--mono);font-size:11px;font-weight:700;padding:6px 14px;border-radius:7px;border:none;background:var(--gold);color:var(--bg);cursor:pointer}
@@ -267,7 +272,7 @@
   </div>
 
 <script>
-const LS = 'system.v12';
+const LS = 'system.v13';
 
 const SCHEDULE_DEF = [
   {id:'wake',  t:'5:30',  nm:'起床',       sub:'QRで解除',                core:false},
@@ -486,8 +491,10 @@ function saveEdit(id) {
   const nmVal = document.getElementById('edit-nm-' + id).value.trim();
   if (!nmVal) return;
   t.t = tVal || t.t;
+  t.tend = document.getElementById('edit-tend-' + id).value.trim();
   t.nm = nmVal;
   t.sub = document.getElementById('edit-sub-' + id).value.trim();
+  t.planb = document.getElementById('edit-planb-' + id).value.trim();
   t.core = document.getElementById('edit-core-' + id).checked;
   s.schedule.sort((a, b) => mins(a.t) - mins(b.t));
   editingId = null;
@@ -693,9 +700,11 @@ function render() {
     el.style.borderRadius = editing ? '13px 13px 0 0' : '';
     let subtxt = t.sub || '';
     const cmtCount = getComments(t.id).length;
+    const tendStr = t.tend ? `<span class="tend">〜${t.tend}</span>` : '';
+    const planbStr = t.planb ? `<span class="planb-badge">B: ${esc(t.planb)}</span>` : '';
     el.innerHTML = `
-      <div class="t">${t.t}</div>
-      <div class="nm">${esc(t.nm)}<small>${esc(subtxt)}</small></div>
+      <div class="t">${t.t}${tendStr}</div>
+      <div class="nm">${esc(t.nm)}<small>${esc(subtxt)}</small>${planbStr}</div>
       <button class="cmtbtn${cmtCount>0?' has':''}" data-cmtbtn="${t.id}" onclick="event.stopPropagation();toggleCmts('${t.id}')">💬${cmtCount>0?' '+cmtCount:''}</button>
       <button class="qrbtn" onclick="event.stopPropagation();openQR('${t.id}','${esc(t.nm)}')">QR</button>
       <button class="editbtn" onclick="startEdit('${t.id}',event)" title="編集">✏️</button>
@@ -709,10 +718,13 @@ function render() {
       ep.id = 'edit-' + t.id;
       ep.innerHTML = `
         <div class="edit-row">
-          <input class="edit-time" id="edit-t-${t.id}" value="${esc(t.t)}" placeholder="7:00">
+          <input class="edit-time" id="edit-t-${t.id}" value="${esc(t.t)}" placeholder="開始 7:00">
+          <input class="edit-time" id="edit-tend-${t.id}" value="${esc(t.tend||'')}" placeholder="終了 9:00">
           <input class="edit-nm" id="edit-nm-${t.id}" value="${esc(t.nm)}" placeholder="タスク名">
         </div>
         <input class="edit-sub" id="edit-sub-${t.id}" value="${esc(t.sub||'')}" placeholder="サブテキスト（任意）">
+        <div class="planb-label">プランB（不確定要素がある場合）</div>
+        <input class="edit-planb" id="edit-planb-${t.id}" value="${esc(t.planb||'')}" placeholder="例：印刷NGなら → データ修正に切り替え">
         <label class="core-row">
           <input type="checkbox" id="edit-core-${t.id}" ${t.core?'checked':''}> ストリーク対象（連続記録に含める）
         </label>
@@ -828,7 +840,7 @@ function render() {
 document.getElementById('copy').onclick = async () => {
   const now = new Date(), k = key(now), done = doneSet(k);
   const dn = s.schedule.filter(t => done.has(t.id)).map(t => t.nm);
-  const un = s.schedule.filter(t => !done.has(t.id)).map(t => t.nm);
+  const un = s.schedule.filter(t => !done.has(t.id)).map(t => t.nm + (t.tend ? ` 〜${t.tend}` : '') + (t.planb ? ` [B:${t.planb}]` : ''));
   const vidPace = getPace('video');
   const potPace = getPace('pot');
   const paceStr = (p, dl) => p ? (p.done ? '完了' : p.overdue ? `期限超過${Math.abs(p.days)}日` : `期限まで${p.days}日・残り${p.remaining}段階`) : (dl || 'なし');
