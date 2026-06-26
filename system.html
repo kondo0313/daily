@@ -160,8 +160,9 @@
   .tier{margin-bottom:14px}
   .tier:last-child{margin-bottom:0}
   .tlabel{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--faint);margin-bottom:7px;text-transform:uppercase}
+  .longrow{display:flex;align-items:baseline;gap:8px;font-family:var(--mono);margin-bottom:8px}
   .longrow .txt{font-size:13px;color:var(--ink)}
-  .track{height:6px;background:#121219;border-radius:99px;overflow:hidden;border:1px solid var(--line);margin-top:10px}
+  .track{height:6px;background:#121219;border-radius:99px;overflow:hidden;border:1px solid var(--line);margin-top:6px}
   .track>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--hot),var(--gold));transition:width .4s cubic-bezier(.2,.8,.2,1)}
   .path{display:flex;align-items:flex-start}
   .node{flex:1;text-align:center;position:relative;cursor:pointer;padding:2px 1px}
@@ -175,16 +176,24 @@
   .node.cur .lb{color:var(--gold);font-weight:700}
   .midnow{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:9px;text-align:center}
   .midnow b{color:var(--gold)}
+  .addrow{display:flex;gap:7px;margin-top:11px}
+  .addrow button{flex:1;font-family:var(--mono);font-weight:700;font-size:13px;padding:9px 0;background:var(--panel-2);color:var(--ink);border:1px solid var(--line);border-radius:9px;cursor:pointer}
+  .addrow button:active{background:#2e2e40}
+  .addrow button.minus{flex:0 0 44px;color:var(--faint)}
   .shortbox{display:flex;gap:9px;align-items:flex-start;cursor:pointer;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
   .shortbox .v{flex:1;font-size:13.5px;line-height:1.45;color:var(--ink)}
   .shortbox .v.empty{color:var(--hot);font-weight:500}
   .shortbox:active{opacity:.7}
   .shortbox .edit-hint{font-size:11px;color:var(--faint);flex:none;align-self:center}
-  .week-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px}
+
+  /* Weekly focus label above shortbox */
+  .week-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
   .week-val{font-size:12px;color:var(--muted);line-height:1.4;flex:1}
   .week-val.empty{color:var(--faint);font-style:italic}
-  .week-edit-btn{font-family:var(--mono);font-size:10px;color:var(--faint);background:none;border:1px solid var(--line);cursor:pointer;padding:2px 8px;border-radius:5px;white-space:nowrap}
+  .week-edit-btn{font-family:var(--mono);font-size:10px;color:var(--faint);background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:5px;border:1px solid var(--line)}
   .week-edit-btn:active{color:var(--gold);border-color:var(--gold)}
+
+  /* milestone deadline inline */
   .mstone-dl-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
   .mstone-dl-chip{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:5px;border:1px solid var(--line);background:var(--panel-2);color:var(--faint);cursor:pointer}
   .mstone-dl-chip.set{color:var(--gold);border-color:#4a3d2a}
@@ -258,7 +267,7 @@
   </div>
 
 <script>
-const LS = 'system.v10';
+const LS = 'system.v11';
 
 const SCHEDULE_DEF = [
   {id:'wake',  t:'5:30',  nm:'起床',       sub:'QRで解除',                core:false},
@@ -363,9 +372,9 @@ function load() {
     log:           r.log           || {},
     video:         r.video         || 0,
     pot:           r.pot           || [false,false,false,false],
-    short:         r.short         || { video:'素材整理＆カット割り（今日こそDay1）', pot:'ポット制作（今日明日完成目標）' },
+    short:         r.short         || { video:'素材整理＆カット割り — 19時スタート', pot:'モデル完成確認＆メルカリ出品準備' },
     studyPick:     r.studyPick     || {},
-    aiReview:      r.aiReview      || '【6/23(月)スタート】\n\n2日間用事があって進捗が止まった。でも状況は悪くない。\n\n■ 動画\n2日遅れだが素材・内容・方針は全部揃ってる。今日19時から1時間でDay1を完走する。カット割りまで決めればラフカットに入れる。\n\n■ ポット\n制作が進んでいる。今日明日でモデル完成見込み → 6/26出品がまだ現実的。\n\n■ 今日のルール\n22時消灯を最優先。19時帰宅・21:30読書・22時就寝のルーティンを守る。',
+    aiReview:      r.aiReview      || '【6/24(火)振り返り】\n\n朝は7時起床になってしまった。アラームを電源オフで回避してた。でも昨日22時就寝は達成 — 就寝リズムは固まってきてる。\n\n■ 朝問題の根本解決（今夜から）\n充電器をベッドから遠ざける。ドア付近に移す。これだけで電源オフが難しくなる。\n\n■ 今日の夜（19時〜）\n書類は帰宅前に完了予定。\n19:00〜20:00 動画 Day1 — 素材整理＆カット割り決定\n20:00〜21:00 ポット — モデル完成確認・メルカリ出品準備\n21:00〜21:30 読書\n22:00 就寝 ＋ 充電器を遠くへ\n\n■ 評価\n動画・ランニング・読書はできてないが、夜の3時間で動画とポットは回収できる。焦らず今夜やり切ることだけ考える。',
     schedule:      r.schedule      || SCHEDULE_DEF.map(t => ({...t})),
     extras:        r.extras        || [],
     comments:      r.comments      || {},
@@ -421,7 +430,7 @@ function paceChipHTML(pace) {
   return `<span class="pace-chip ${pace.status}">${dot} 期限まで${pace.days}日</span>`;
 }
 
-// ── ACTIONS ──
+// ── TOGGLE ──
 function toggle(id) {
   const k = key(); const set = doneSet(k);
   set.has(id) ? set.delete(id) : set.add(id);
@@ -438,12 +447,14 @@ function editWeeklyFocus(g) {
   if (v !== null) { s.weeklyFocus[g] = v.trim(); save(); render(); }
 }
 function editDeadline(g) {
-  const v = prompt(`最終期限 (YYYY-MM-DD)\n例: 2026-07-31`, s.goalDeadlines[g]||'');
+  const cur = s.goalDeadlines[g] || '';
+  const v = prompt(`最終期限 (YYYY-MM-DD)\n例: 2026-07-31`, cur);
   if (v !== null) { s.goalDeadlines[g] = v.trim(); save(); render(); }
 }
 function editMstoneDate(g, i) {
+  const cur = s.mstoneDates[g][i] || '';
   const lb = g === 'video' ? VID_LABELS[i] : POT_LABELS[i];
-  const v = prompt(`M${i+1} ${lb} 完了期限 (YYYY-MM-DD)`, s.mstoneDates[g][i]||'');
+  const v = prompt(`M${i+1} ${lb} 完了期限 (YYYY-MM-DD)`, cur);
   if (v !== null) {
     s.mstoneDates[g] = [...s.mstoneDates[g]];
     s.mstoneDates[g][i] = v.trim();
@@ -660,9 +671,7 @@ function render() {
         <div class="focus-body">
           <div class="focus-label">${g.title} ${chip}</div>
           <div class="focus-today${today?'':' empty'}" onclick="editShort('${g.key}')">${esc(today)||'今日のアクションを設定 → タップ'}</div>
-          ${week
-            ? `<div class="focus-week">↑ 今週: <b>${esc(week)}</b></div>`
-            : `<div class="focus-week" style="color:var(--faint);font-style:italic">今週の目標 → 下のゴール管理でタップして設定</div>`}
+          ${week ? `<div class="focus-week">↑ 今週: <b>${esc(week)}</b></div>` : `<div class="focus-week" style="color:var(--faint);font-style:italic">今週の目標 → ゴール管理でタップして設定</div>`}
         </div>
       </div>`;
   }).join('');
@@ -682,10 +691,11 @@ function render() {
     const el = document.createElement('div');
     el.className = 'task' + (on ? ' done' : '') + (act ? ' now' : '') + (editing ? ' now' : '');
     el.style.borderRadius = editing ? '13px 13px 0 0' : '';
+    let subtxt = t.sub || '';
     const cmtCount = getComments(t.id).length;
     el.innerHTML = `
       <div class="t">${t.t}</div>
-      <div class="nm">${esc(t.nm)}<small>${esc(t.sub||'')}</small></div>
+      <div class="nm">${esc(t.nm)}<small>${esc(subtxt)}</small></div>
       <button class="cmtbtn${cmtCount>0?' has':''}" data-cmtbtn="${t.id}" onclick="event.stopPropagation();toggleCmts('${t.id}')">💬${cmtCount>0?' '+cmtCount:''}</button>
       <button class="qrbtn" onclick="event.stopPropagation();openQR('${t.id}','${esc(t.nm)}')">QR</button>
       <button class="editbtn" onclick="startEdit('${t.id}',event)" title="編集">✏️</button>
@@ -749,37 +759,46 @@ function render() {
     fn: 'pot',
   }));
 
-  function goalCardHTML(key, icon, title, pct, nodes, midnow) {
-    const dl   = s.goalDeadlines[key];
-    const pace = getPace(key);
-    const chip = paceChipHTML(pace);
-    const wf   = s.weeklyFocus[key];
-    const tod  = s.short[key];
+  function goalCardHTML(key, icon, title, pct, nodes, midnow, extraHTML) {
+    const dl    = s.goalDeadlines[key];
+    const pace  = getPace(key);
+    const chip  = paceChipHTML(pace);
+    const wf    = s.weeklyFocus[key];
+    const tod   = s.short[key];
+
     let paceDetail = '';
     if (pace && !pace.done && !pace.overdue) {
-      paceDetail = `<div class="pace-row" style="margin-top:5px;margin-bottom:2px">${pace.remaining}段階残り・1段階あたり約<b style="color:var(--gold);margin:0 2px">${pace.dps}日</b>のペースで達成</div>`;
+      paceDetail = `<div class="pace-row" style="margin-top:4px">${pace.remaining}段階残り / 1段階あたり約<b style="color:var(--gold)">${pace.dps}日</b>のペースで達成</div>`;
     }
-    const mstoneChips = nodes.map((n, i) =>
+
+    const mstoneDeadlineChips = nodes.map((n, i) =>
       `<button class="mstone-dl-chip${n.dl?' set':''}" onclick="editMstoneDate('${key}',${i})">M${i+1} ${n.dl||'期限+'}</button>`
     ).join('');
+
     return `
       <div class="goal">
-        <div class="top"><span class="title">${icon} ${title}</span><span class="pct">${pct}%</span></div>
+        <div class="top">
+          <span class="title">${icon} ${title}</span>
+          <span class="pct">${pct}%</span>
+        </div>
         <div class="goal-meta">
-          <button class="goal-dl-btn${dl?' set':''}" onclick="editDeadline('${key}')">📅 ${dl ? dl.slice(5).replace('-','/') + 'まで' : '最終期限を設定'}</button>
+          <button class="goal-dl-btn${dl?' set':''}" onclick="editDeadline('${key}')">
+            📅 ${dl ? dl.slice(5).replace('-','/') + 'まで' : '最終期限を設定'}
+          </button>
           ${chip}
         </div>
         ${paceDetail}
         <div class="tier">
           <div class="tlabel">マイルストーン（タップで進捗更新）</div>
           ${pathHTML(nodes)}
-          <div class="mstone-dl-row">${mstoneChips}</div>
+          <div class="mstone-dl-row">${mstoneDeadlineChips}</div>
           <div class="midnow">${midnow}</div>
+          ${extraHTML}
         </div>
         <div class="tier">
           <div class="tlabel">今週の目標</div>
           <div class="week-row">
-            <span class="week-val${wf?'':' empty'}">${esc(wf)||'未設定 — 今週何を完了させる？'}</span>
+            <span class="week-val${wf?'':' empty'}">${esc(wf)||'未設定 — 今週何を完了させますか？'}</span>
             <button class="week-edit-btn" onclick="editWeeklyFocus('${key}')">編集</button>
           </div>
         </div>
@@ -797,9 +816,9 @@ function render() {
   const gw = document.getElementById('goals');
   gw.innerHTML =
     goalCardHTML('video', '🎬', '動画 一本', vidPct, vidNodes,
-      `いま <b>M${s.video+1} ${VID_LABELS[s.video]}</b>`) +
-    goalCardHTML('pot', '🫙', 'ポット メルカリ販売', potPct, potNodes,
-      `いま <b>${potCur < POT_LABELS.length ? 'M'+(potCur+1)+' '+POT_LABELS[potCur] : '完了！'}</b>`);
+      `いま <b>M${s.video+1} ${VID_LABELS[s.video]}</b>`, '') +
+    goalCardHTML('pot', '🫙', 'ポット販売', potPct, potNodes,
+      `いま <b>${potCur < POT_LABELS.length ? 'M'+(potCur+1)+' '+POT_LABELS[potCur] : '完了！'}</b>`, '');
 
   gw.querySelectorAll('.node[data-fn="stage"]').forEach(n => n.onclick = () => setStage(parseInt(n.dataset.i)));
   gw.querySelectorAll('.node[data-fn="pot"]').forEach(n => n.onclick = () => togglePot(parseInt(n.dataset.i)));
@@ -812,16 +831,20 @@ document.getElementById('copy').onclick = async () => {
   const un = s.schedule.filter(t => !done.has(t.id)).map(t => t.nm);
   const vidPace = getPace('video');
   const potPace = getPace('pot');
-  const paceStr = p => p ? (p.done ? '完了' : p.overdue ? `期限超過${Math.abs(p.days)}日` : `期限まで${p.days}日・残り${p.remaining}段階`) : '期限未設定';
+  const paceStr = (p, dl) => p ? (p.done ? '完了' : p.overdue ? `期限超過${Math.abs(p.days)}日` : `期限まで${p.days}日・残り${p.remaining}段階`) : (dl || 'なし');
   let txt = `【SYSTEM ${k.slice(5).replace('-','/')}(${WD[now.getDay()]})】\n`;
   txt += `今日 ${dn.length}/${s.schedule.length} ・ 連続 ${streak()}日\n`;
   if (dn.length) txt += `✅ ${dn.join(' / ')}\n`;
   if (un.length) txt += `⬜ ${un.join(' / ')}\n`;
-  txt += `\n― ゴール（逆算）―\n`;
-  txt += `🎬 動画 M${s.video+1}${VID_LABELS[s.video]} (${Math.round(s.video/(VID_LABELS.length-1)*100)}%) | ${paceStr(vidPace)}\n`;
-  txt += `   今週: ${s.weeklyFocus.video||'未設定'}\n   今日: ${s.short.video||'未設定'}\n`;
-  txt += `🫙 ポット M${s.pot.filter(Boolean).length+1} (${Math.round(s.pot.filter(Boolean).length/POT_LABELS.length*100)}%) | ${paceStr(potPace)}\n`;
-  txt += `   今週: ${s.weeklyFocus.pot||'未設定'}\n   今日: ${s.short.pot||'未設定'}\n`;
+  txt += `\n― ゴール管理 ―\n`;
+  txt += `🎬 動画 M${s.video+1}${VID_LABELS[s.video]} (${Math.round(s.video/(VID_LABELS.length-1)*100)}%)\n`;
+  txt += `   期限: ${s.goalDeadlines.video||'未設定'} / ペース: ${paceStr(vidPace, s.goalDeadlines.video)}\n`;
+  txt += `   今週: ${s.weeklyFocus.video||'未設定'}\n`;
+  txt += `   今日: ${s.short.video||'未設定'}\n`;
+  txt += `🫙 ポット M${s.pot.filter(Boolean).length+1} (${Math.round(s.pot.filter(Boolean).length/POT_LABELS.length*100)}%)\n`;
+  txt += `   期限: ${s.goalDeadlines.pot||'未設定'} / ペース: ${paceStr(potPace, s.goalDeadlines.pot)}\n`;
+  txt += `   今週: ${s.weeklyFocus.pot||'未設定'}\n`;
+  txt += `   今日: ${s.short.pot||'未設定'}\n`;
   const allCmts = [];
   s.schedule.forEach(t => { const c = getComments(t.id); if(c.length) allCmts.push(`【${t.nm}】\n`+c.map(x=>`  ${x.time} ${x.text}`).join('\n')); });
   s.extras.forEach(t => { const c = getComments(t.id); if(c.length) allCmts.push(`【${t.nm}】\n`+c.map(x=>`  ${x.time} ${x.text}`).join('\n')); });
