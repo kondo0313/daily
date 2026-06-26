@@ -272,18 +272,18 @@
   </div>
 
 <script>
-const LS = 'system.v13';
+const LS = 'system.v14';
 
 const SCHEDULE_DEF = [
-  {id:'wake',  t:'5:30',  nm:'起床',       sub:'QRで解除',                core:false},
-  {id:'run',   t:'5:45',  nm:'ランニング',  sub:'ルーティン',               core:false},
-  {id:'meal',  t:'6:15',  nm:'弁当＆朝食', sub:'ルーティン',               core:false},
-  {id:'prep',  t:'6:45',  nm:'身支度',     sub:'ルーティン',               core:false},
-  {id:'work',  t:'7:30',  nm:'出社',       sub:'平日',                    core:true},
-  {id:'video', t:'19:00', nm:'動画作業',   sub:'Day1 素材整理＆カット割り', core:true},
-  {id:'pot',   t:'20:00', nm:'ポット制作', sub:'今日明日で完成 → 出品へ',   core:true},
-  {id:'read',  t:'21:30', nm:'読書',       sub:'就寝前 〜30分',            core:true},
-  {id:'sleep', t:'22:00', nm:'就寝',       sub:'22時消灯厳守',             core:true},
+  {id:'wake',  t:'7:00',  tend:'7:15',  nm:'起床',              sub:'起き上がり即スタート',         core:false},
+  {id:'train', t:'7:15',  tend:'8:15',  nm:'筋トレ＆ランニング', sub:'ルーティン',                  core:false},
+  {id:'pot',   t:'8:30',  tend:'9:00',  nm:'ポット印刷確認',     sub:'OK即メルカリ出品',            core:true,  planb:'印刷NG → データ修正に切り替え'},
+  {id:'video', t:'9:00',  tend:'11:00', nm:'動画編集',           sub:'素材整理＆カット割り',         core:true},
+  {id:'clean', t:'11:00', tend:'12:00', nm:'掃除',               sub:'1時間集中',                  core:false},
+  {id:'hobby', t:'12:00', tend:'13:00', nm:'趣味',               sub:'自由時間',                   core:false},
+  {id:'aft',   t:'13:00', tend:'',      nm:'午後の予定',          sub:'外出・用事など',              core:false},
+  {id:'read',  t:'21:30', tend:'22:00', nm:'読書',               sub:'就寝前30分',                 core:true},
+  {id:'sleep', t:'22:00', tend:'',      nm:'就寝',               sub:'22時消灯厳守',               core:true},
 ];
 
 // ── GIST ──
@@ -377,14 +377,14 @@ function load() {
     log:           r.log           || {},
     video:         r.video         || 0,
     pot:           r.pot           || [false,false,false,false],
-    short:         r.short         || { video:'素材整理＆カット割り — 9時スタート死守', pot:'印刷結果確認 → 問題なければ即メルカリ出品' },
+    short:         r.short         || { video:'素材整理＆カット割り — 9:00〜11:00の2時間で完了', pot:'8:30に印刷確認 → OK即メルカリ出品（今月目標達成）' },
     studyPick:     r.studyPick     || {},
-    aiReview:      r.aiReview      || '【6/26(木)振り返り】\n\n就寝1時半〜2時。動画編集ゼロ。読書ゼロ。22時就寝の約束を完全に破った。\n\nポットの試作品印刷中＆デザインシステム構築は良い動き。でも順序が逆 — やるべきことを先にやれ。\n\n■ 厳しく言う\n22時就寝を決めて深夜2時まで起きてたのはサボりだ。「眠れなかった」じゃなく「やめなかった」。充電器の移動はやったか？やってないなら今すぐやれ。\n\n■ 明日6/27のプラン（午前勝負）\n07:00 起床\n07:15 筋トレ＆ランニング\n08:30 ポット印刷結果確認 → OK即メルカリ出品\n09:00 動画編集 — 素材整理＆カット割り（2時間）\n11:00 掃除（1時間）\n12:00 趣味（1時間）\n13:00 午後の予定\n\n■ 一言\nポットが出品できたら今月の目標達成になる。明日の8:30が勝負。それだけ考えて寝ろ。',
+    aiReview:      r.aiReview      || '【6/27(土)今日のプラン】\n\n昨日は就寝が深夜2時頃になりましたが、ポット試作品の印刷まで漕ぎ着けたことは前進です。今日はその成果を形にする日です。\n\n■ 今日の最重要タスク\n印刷結果を確認して、問題がなければ即メルカリ出品まで完了させてください。それだけで今月の目標が達成です。\n\n■ 今日のスケジュール\n07:00〜07:15 起床\n07:15〜08:15 筋トレ＆ランニング\n08:30〜09:00 ポット印刷確認 → OK即メルカリ出品\n09:00〜11:00 動画編集（素材整理＆カット割り）\n11:00〜12:00 掃除\n12:00〜13:00 趣味\n13:00〜      午後の予定\n\n■ プランB（印刷NGの場合）\nデータ修正に切り替え → 再入稿 → 出品は来週早々に。動画編集に時間を回す。\n\n■ 一言\n午前中が全てです。8:30の印刷確認から動いてください。',
     schedule:      r.schedule      || SCHEDULE_DEF.map(t => ({...t})),
     extras:        r.extras        || [],
     comments:      r.comments      || {},
     goalDeadlines: r.goalDeadlines || { video: '2026-07-07', pot: '2026-06-30' },
-    weeklyFocus:   r.weeklyFocus   || { video: '素材整理＆カット割り完了', pot: '明日8:30に印刷確認→即出品' },
+    weeklyFocus:   r.weeklyFocus   || { video: '素材整理＆カット割り完了（今日9:00〜11:00）', pot: '今日8:30に印刷確認→即出品→今月目標達成' },
     mstoneDates:   r.mstoneDates   || { video: ['2026-06-25','2026-07-01','2026-07-04','2026-07-07'], pot: ['2026-06-25','2026-06-26','2026-06-30','2026-07-31'] },
   };
 }
