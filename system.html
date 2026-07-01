@@ -272,18 +272,16 @@
   </div>
 
 <script>
-const LS = 'system.v14';
+const LS = 'system.v15';
 
 const SCHEDULE_DEF = [
-  {id:'wake',  t:'7:00',  tend:'7:15',  nm:'起床',              sub:'起き上がり即スタート',         core:false},
-  {id:'train', t:'7:15',  tend:'8:15',  nm:'筋トレ＆ランニング', sub:'ルーティン',                  core:false},
-  {id:'pot',   t:'8:30',  tend:'9:00',  nm:'ポット印刷確認',     sub:'OK即メルカリ出品',            core:true,  planb:'印刷NG → データ修正に切り替え'},
-  {id:'video', t:'9:00',  tend:'11:00', nm:'動画編集',           sub:'素材整理＆カット割り',         core:true},
-  {id:'clean', t:'11:00', tend:'12:00', nm:'掃除',               sub:'1時間集中',                  core:false},
-  {id:'hobby', t:'12:00', tend:'13:00', nm:'趣味',               sub:'自由時間',                   core:false},
-  {id:'aft',   t:'13:00', tend:'',      nm:'午後の予定',          sub:'外出・用事など',              core:false},
-  {id:'read',  t:'21:30', tend:'22:00', nm:'読書',               sub:'就寝前30分',                 core:true},
-  {id:'sleep', t:'22:00', tend:'',      nm:'就寝',               sub:'22時消灯厳守',               core:true},
+  {id:'wake',   t:'7:00',  tend:'7:15',  nm:'起床',               sub:'済み ✓',                          core:false},
+  {id:'train',  t:'7:15',  tend:'8:15',  nm:'筋トレ＆ランニング',  sub:'済み ✓',                          core:false},
+  {id:'video1', t:'8:30',  tend:'15:00', nm:'動画編集（カット）',   sub:'ラフカット集中 — 15時締め切り',   core:true},
+  {id:'lever',  t:'15:00', tend:'19:00', nm:'レバレスセットアップ', sub:'4時間確保',                       core:true},
+  {id:'video2', t:'19:00', tend:'21:00', nm:'動画編集（字幕）',    sub:'字幕まで進めたら最高',             core:true},
+  {id:'read',   t:'21:00', tend:'22:00', nm:'読書',                sub:'就寝前1時間',                     core:true},
+  {id:'sleep',  t:'22:00', tend:'',      nm:'就寝',                sub:'22時消灯厳守',                    core:true},
 ];
 
 // ── GIST ──
@@ -377,15 +375,15 @@ function load() {
     log:           r.log           || {},
     video:         r.video         || 0,
     pot:           r.pot           || [false,false,false,false],
-    short:         r.short         || { video:'素材整理＆カット割り — 9:00〜11:00の2時間で完了', pot:'8:30に印刷確認 → OK即メルカリ出品（今月目標達成）' },
+    short:         r.short         || { video:'今日中にカット＋字幕まで — 日曜アップロードへ', pot:'出品は一時停止中（ポット自体は完成済み）' },
     studyPick:     r.studyPick     || {},
-    aiReview:      r.aiReview      || '【6/27(土)今日のプラン】\n\n昨日は就寝が深夜2時頃になりましたが、ポット試作品の印刷まで漕ぎ着けたことは前進です。今日はその成果を形にする日です。\n\n■ 今日の最重要タスク\n印刷結果を確認して、問題がなければ即メルカリ出品まで完了させてください。それだけで今月の目標が達成です。\n\n■ 今日のスケジュール\n07:00〜07:15 起床\n07:15〜08:15 筋トレ＆ランニング\n08:30〜09:00 ポット印刷確認 → OK即メルカリ出品\n09:00〜11:00 動画編集（素材整理＆カット割り）\n11:00〜12:00 掃除\n12:00〜13:00 趣味\n13:00〜      午後の予定\n\n■ プランB（印刷NGの場合）\nデータ修正に切り替え → 再入稿 → 出品は来週早々に。動画編集に時間を回す。\n\n■ 一言\n午前中が全てです。8:30の印刷確認から動いてください。',
+    aiReview:      r.aiReview      || '【6/27(土)今日のプラン】\n\n起床・筋トレ・ランニング、スタートは完璧です。その勢いで動画に入ってください。\n\n■ 今日の目標\n今週日曜アップロードに向けて、今日中にカット＋字幕まで進める。できれば書き出しまで見えてくると最高。\n\n■ タイムライン\n08:30〜15:00 動画編集（ラフカット）— 15時は死守\n15:00〜19:00 レバレスセットアップ\n19:00〜21:00 動画編集（字幕）\n21:00〜22:00 読書\n22:00      就寝\n\n■ ポットについて\n試作品完成、おめでとうございます。出品タイミングはあなたが一番よくわかっているので、準備が整ったときに動いてください。今は動画に集中する判断、正解です。\n\n■ 一言\n15時のカット締め切りを守れば、あとは流れます。まず15時を取りにいってください。',
     schedule:      r.schedule      || SCHEDULE_DEF.map(t => ({...t})),
     extras:        r.extras        || [],
     comments:      r.comments      || {},
-    goalDeadlines: r.goalDeadlines || { video: '2026-07-07', pot: '2026-06-30' },
-    weeklyFocus:   r.weeklyFocus   || { video: '素材整理＆カット割り完了（今日9:00〜11:00）', pot: '今日8:30に印刷確認→即出品→今月目標達成' },
-    mstoneDates:   r.mstoneDates   || { video: ['2026-06-25','2026-07-01','2026-07-04','2026-07-07'], pot: ['2026-06-25','2026-06-26','2026-06-30','2026-07-31'] },
+    goalDeadlines: r.goalDeadlines || { video: '2026-07-06', pot: '' },
+    weeklyFocus:   r.weeklyFocus   || { video: '日曜アップロード確定 — 今日カット＆字幕まで', pot: '出品タイミングは状況次第・焦らず判断' },
+    mstoneDates:   r.mstoneDates   || { video: ['2026-06-27','2026-07-01','2026-07-05','2026-07-06'], pot: ['2026-06-25','2026-06-27','2026-07-31','2026-08-31'] },
   };
 }
 function save(sync = true) {
